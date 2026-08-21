@@ -19,7 +19,6 @@ jobs:
       - run: npm run build
 
   promote-v5-character-media:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/mvp-production-board'
     runs-on: ubuntu-latest
     permissions:
       contents: write

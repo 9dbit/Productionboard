@@ -1,16 +1,17 @@
 # Production Media Validation
 
-This document records the media contract used by the Produxion MVP after the standalone-media migration.
+This document records the production-media contract used by the Produxion MVP.
 
 ## Casablanca cover
 
-- Runtime URL: `/production-assets/real/casablanca-cover.webp`
-- Source is a normal binary WebP generated from the locked production poster source.
-- The generated standalone copy also lives under `/production-assets/individual/cover/`.
+- Stable runtime URL: `/production-assets/individual/cover/casablanca-cover.webp`.
+- Required final contract: **1080 × 1920 minimum, 9:16**.
+- Current application state: **INTERIM**.
+- Do not mark the cover `LOCKED` until an approved native-resolution master replaces the interim runtime file.
 
 ## Character locks
 
-The browser must not crop the character contact-sheet atlas for the six available locked angles.
+The browser must never crop a contact-sheet atlas as the production character master.
 
 Each locked character uses six standalone WebP files:
 
@@ -21,7 +22,7 @@ Each locked character uses six standalone WebP files:
 - 3/4 LEFT
 - 3/4 RIGHT
 
-Generated character canvas: **600 × 800 (3:4)**.
+Current locked V5 runtime canvas: **1200 × 1600 (3:4)**.
 
 Characters covered:
 
@@ -32,25 +33,47 @@ Characters covered:
 - Dimas
 - Penumpang Tanpa Wajah
 
-Total standalone character images: **36**.
+Total locked runtime character images: **36**.
+
+The approved PNG masters live under `public/production-assets/v5/characters/` and are promoted in-place to the stable runtime WebP paths under `public/production-assets/individual/characters/`.
 
 ## EP001 storyboard
 
 EP001 contains 8 scenes × 2 shots = **16 standalone storyboard images**.
 
-Generated storyboard canvas: **720 × 1280 (9:16 vertical)**.
+Existing runtime storyboard files live at:
 
-The application maps database IDs such as `EP001-SC01-SH01` through `EP001-SC08-SH02` to the flattened generated media files `SH01.webp` through `SH16.webp`.
+`/production-assets/individual/storyboards/EP001/SH01.webp` … `SH16.webp`.
 
-Both the Episode Storyboard page and Shot Inspector must render these standalone files directly. They must not use browser-side atlas cropping for the master storyboard frame.
+Those existing 720 × 1280 WebPs remain **INTERIM**.
+
+The V5 final storyboard contract is:
+
+- 16 one-shot-one-file PNG masters;
+- **1080 × 1920** each;
+- 9:16 vertical;
+- exact SH01–SH16 mapping;
+- locked character identity and vehicle/environment continuity;
+- explicit per-shot approval before promotion.
+
+V5 storyboard source of truth:
+
+`public/production-assets/v5/storyboards/EP001/manifest.json`
+
+Review gate:
+
+`docs/EP001_STORYBOARD_V5_GATE.md`
+
+The Episode Storyboard page and Shot Inspector must continue rendering the stable standalone runtime paths directly. They must not use browser-side atlas cropping for master storyboard frames.
 
 ## Validation gate
 
-Before Replit pulls this branch:
+Before Replit pulls the branch:
 
-- GitHub asset generation completes.
-- Cover binary exists at the runtime URL.
-- Six standalone angle files exist for every locked character.
-- SH01–SH16 exist under the EP001 storyboard directory.
-- TypeScript typecheck passes.
+- character V5 package remains complete and locked;
+- six runtime angle files exist for every locked character at 1200 × 1600;
+- cover state is represented truthfully;
+- SH01–SH16 runtime files exist;
+- storyboard V5 is not marked `LOCKED` before all 16 approved 1080 × 1920 masters exist;
+- TypeScript typecheck passes;
 - Next.js production build passes.

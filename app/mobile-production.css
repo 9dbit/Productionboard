@@ -1,0 +1,31 @@
+/* Produxion mobile production pass */
+@media (max-width: 760px){
+  .platformBar{height:auto;min-height:64px;padding:10px 16px;gap:10px;align-items:center;overflow:hidden}
+  .produxionBrand{flex:0 0 auto;min-width:0}.produxionBrand strong{font-size:17px}.brandGlyph{width:38px;height:38px}.brandBadge{display:none}
+  .platformNav{margin-left:auto;gap:2px;overflow-x:auto;scrollbar-width:none;max-width:52vw}.platformNav::-webkit-scrollbar{display:none}.platformNav a{font-size:11px;padding:8px 9px;white-space:nowrap}.platformNav a:last-child{max-width:112px;overflow:hidden;text-overflow:ellipsis}
+
+  .homePage{padding:0 16px 60px}.platformHero{min-height:0;grid-template-columns:1fr;gap:30px;padding:44px 0}.platformHeroCopy h1{font-size:46px}.platformHeroPanel{grid-template-columns:1fr 1fr}.platformIntro{grid-template-columns:1fr;gap:12px;padding:38px 0}
+  .movieCoverGrid{grid-template-columns:1fr;gap:14px}.movieCoverGrid>a,.movieCoverGrid>div{display:block}.movieCoverCard{display:grid;grid-template-columns:132px minmax(0,1fr);min-height:235px}.movieCoverImage{aspect-ratio:9/16;height:100%;min-height:235px}.movieCoverInfo{padding:15px}.movieCoverInfo h3{font-size:20px}.movieCoverInfo p{-webkit-line-clamp:4}.movieCoverMeta{display:grid;gap:4px}.disabledMovie{opacity:.5}
+
+  .movieWorkspace.page{padding:18px 16px 60px}.movieHero{grid-template-columns:92px minmax(0,1fr);gap:16px}.moviePosterWrap{width:92px}.moviePoster{aspect-ratio:9/16;border-radius:12px}.movieHeroCopy{padding:0}.movieHeroCopy h1{font-size:34px;margin:4px 0 9px}.movieHeroCopy h3{margin:16px 0 6px}.movieHeroCopy p{font-size:12px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}.movieMeta span{font-size:7px;padding:5px 7px}.movieQuickLinks{display:none}
+  .movieTabs{margin-top:22px;justify-content:space-between;gap:0}.movieTab{flex:1;text-align:center;padding:12px 4px;font-size:11px}
+
+  .workspaceIntro{display:block;padding:22px 0 12px}.workspaceIntro>p{margin-top:8px}.workspaceIntro h2{font-size:26px}
+  .movieDashboardGrid{grid-template-columns:1fr}.wideModule{grid-column:auto}.productionSteps{grid-template-columns:1fr 1fr}
+
+  .episodeStoryboardHeader{display:block}.episodeHeaderActions{margin-top:12px}.timeline{overflow-x:auto}.storyboardShotGrid{grid-template-columns:1fr}.storyboardShot{max-width:390px;margin:0 auto;width:100%}.storyboardShot>.assetVisual{min-height:0}.storyboardShot .atlasFrame{width:min(100%,340px)!important;margin:0 auto}.storyboardShotBody{padding:13px}.storyboardShot dl{grid-template-columns:1fr 1fr}.storyboardScene{padding:14px}.storyboardScene h3{font-size:23px}
+
+  .shotDetail{grid-template-columns:1fr!important}.shotCanvas>.assetVisual .atlasFrame{width:min(100%,360px)!important;margin:0 auto}.referenceGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+  .characterLockIntro{grid-template-columns:100px 1fr;gap:14px;align-items:start}.characterLockIntro>.assetVisual{min-height:0}.characterLockIntro h3{font-size:24px}.characterLockIntro p{font-size:12px}.angleGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.angleSlot{padding:7px}.angleSlot .atlasFrame{aspect-ratio:3/4!important;background:#eef0f1}.angleSlot .atlasFrame img{object-fit:cover!important}.angleSlot .atlasActions{padding:5px}.angleSlot .assetDownload{font-size:8px;padding:6px 7px}.missingAngleStrip{margin-top:12px}
+  .environmentAssetGrid,.assetGrid{grid-template-columns:1fr}
+
+  .sectionHead{align-items:flex-start;gap:8px}.sectionHead>.muted{display:none}
+}
+
+@media (max-width: 430px){
+  .platformNav{max-width:48vw}.platformNav a{font-size:10px;padding:8px 7px}
+  .movieHero{grid-template-columns:82px minmax(0,1fr);gap:14px}.moviePosterWrap{width:82px}.movieHeroCopy h1{font-size:30px}
+  .movieCoverCard{grid-template-columns:116px minmax(0,1fr);min-height:206px}.movieCoverImage{min-height:206px}
+  .platformHeroPanel{grid-template-columns:1fr}.platformHeroCopy h1{font-size:40px}
+}

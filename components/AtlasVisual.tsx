@@ -23,10 +23,18 @@ const atlasCache=new Map<string,Promise<string>>();
 function loadAtlas(sources:string[],mime:string){
   const key=`${mime}:${sources.join('|')}`;
   if(!atlasCache.has(key)){
-    atlasCache.set(key,Promise.all(sources.map(source=>fetch(source).then(response=>{
-      if(!response.ok) throw new Error(`Atlas load failed: ${source}`);
-      return response.text();
-    }))).then(parts=>`data:${mime};base64,${parts.join('').replace(/\s+/g,'')}`));
+    const directBinary=sources.length===1&&sources[0].startsWith('/api/production-media/');
+    const promise=directBinary
+      ? fetch(sources[0]).then(async response=>{
+          if(!response.ok) throw new Error(`Atlas load failed: ${sources[0]}`);
+          const blob=await response.blob();
+          return URL.createObjectURL(blob);
+        })
+      : Promise.all(sources.map(source=>fetch(source).then(response=>{
+          if(!response.ok) throw new Error(`Atlas load failed: ${source}`);
+          return response.text();
+        }))).then(parts=>`data:${mime};base64,${parts.join('').replace(/\s+/g,'')}`);
+    atlasCache.set(key,promise);
   }
   return atlasCache.get(key)!;
 }
@@ -45,6 +53,8 @@ async function renderCrop(uri:string,tile:AtlasTile){
   canvas.height=Math.max(1,Math.round(sh));
   const ctx=canvas.getContext('2d');
   if(!ctx) return null;
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
   ctx.drawImage(image,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
   return canvas.toDataURL('image/png',1);
 }
@@ -70,7 +80,7 @@ export function AtlasVisual({tile,alt,downloadable=true,className='',aspect='sou
         const rendered=await renderCrop(value,tile);
         if(active&&rendered) setDisplayUri(rendered);
       })
-      .catch(()=>active&&setError(true));
+      .catch(error=>{console.error(error);if(active)setError(true)});
     return()=>{active=false};
   },[key,tile.mime]);
 
@@ -96,7 +106,7 @@ export function AtlasVisual({tile,alt,downloadable=true,className='',aspect='sou
       {displayUri&&<img src={displayUri} alt={alt} loading="lazy" style={{width:'100%',height:'100%',objectFit:fit,display:'block'}} />}
       {badge&&<span className="visualBadge">{badge}</span>}
       {!displayUri&&!error&&<div className="assetLoading">Loading production asset…</div>}
-      {error&&<div className="assetLoading">Asset unavailable</div>}
+      {error&&<div className="assetLoading"><strong>Production image unavailable</strong><small>Media endpoint failed. Refresh after update.</small></div>}
     </div>
     {displayUri&&<div className="atlasActions">
       <button type="button" className="assetDownload" onClick={viewCrop}>View HD</button>

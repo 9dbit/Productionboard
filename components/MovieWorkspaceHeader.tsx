@@ -7,7 +7,7 @@ export function MovieWorkspaceHeader({ active }: { active:'Dashboard'|'Script'|'
   return <>
     <section className="movieHero">
       <div className="moviePosterWrap">
-        <AssetVisual src={casablancaCover.src} alt={`${casablancaMovie.title} cover`} ratio="9:16" fit="cover" className="moviePoster" label={casablancaCover.state}/>
+        <AssetVisual src={casablancaCover.src} alt={`${casablancaMovie.title} cover`} ratio="9:16" fit="cover" className="moviePoster" downloadable={false}/>
       </div>
       <div className="movieHeroCopy">
         <span className="eyebrow accent">{casablancaMovie.kicker}</span>

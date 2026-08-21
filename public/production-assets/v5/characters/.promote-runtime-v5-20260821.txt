@@ -1,3 +1,0 @@
-Promotion trigger after all six V5 character packages reached LOCKED state.
-Requested: 2026-08-21T23:15:00+07:00
-Expected: promote all six PNG angle sets to stable 1200x1600 WebP runtime paths.

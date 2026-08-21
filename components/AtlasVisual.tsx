@@ -15,6 +15,9 @@ export type AtlasTile={
   crop?:{x:number;y:number;width:number;height:number};
 };
 
+type VisualAspect='source'|'portrait-9-16'|'character-3-4';
+type VisualFit='contain'|'cover';
+
 const atlasCache=new Map<string,Promise<string>>();
 
 function loadAtlas(sources:string[],mime:string){
@@ -46,8 +49,13 @@ async function renderCrop(uri:string,tile:AtlasTile){
   return canvas.toDataURL('image/png',1);
 }
 
-export function AtlasVisual({tile,alt,downloadable=true,className=''}:{tile:AtlasTile;alt:string;downloadable?:boolean;className?:string}){
-  const [uri,setUri]=useState('');
+function aspectValue(tile:AtlasTile,aspect:VisualAspect){
+  if(aspect==='portrait-9-16') return '9 / 16';
+  if(aspect==='character-3-4') return '3 / 4';
+  return tile.crop?`${tile.crop.width*tile.tileWidth} / ${tile.crop.height*tile.tileHeight}`:`${tile.tileWidth} / ${tile.tileHeight}`;
+}
+
+export function AtlasVisual({tile,alt,downloadable=true,className='',aspect='source',fit='contain',badge}:{tile:AtlasTile;alt:string;downloadable?:boolean;className?:string;aspect?:VisualAspect;fit?:VisualFit;badge?:string}){
   const [displayUri,setDisplayUri]=useState('');
   const [error,setError]=useState(false);
   const key=useMemo(()=>`${tile.sources.join('|')}:${tile.col}:${tile.row}:${JSON.stringify(tile.crop??{})}`,[tile.sources,tile.col,tile.row,tile.crop]);
@@ -59,7 +67,6 @@ export function AtlasVisual({tile,alt,downloadable=true,className=''}:{tile:Atla
     loadAtlas(tile.sources,tile.mime)
       .then(async value=>{
         if(!active) return;
-        setUri(value);
         const rendered=await renderCrop(value,tile);
         if(active&&rendered) setDisplayUri(rendered);
       })
@@ -79,14 +86,15 @@ export function AtlasVisual({tile,alt,downloadable=true,className=''}:{tile:Atla
     if(!displayUri) return;
     const win=window.open();
     if(win){
-      win.document.write(`<html><body style="margin:0;background:#070b0f;display:grid;place-items:center;min-height:100vh"><img src="${displayUri}" style="max-width:100%;height:auto"/></body></html>`);
+      win.document.write(`<html><body style="margin:0;background:#070b0f;display:grid;place-items:center;min-height:100vh"><img src="${displayUri}" style="max-width:100%;max-height:100vh;height:auto;object-fit:contain"/></body></html>`);
       win.document.close();
     }
   }
 
-  return <div className={`assetVisual atlasVisual ${className}`}>
-    <div style={{position:'relative',overflow:'hidden',width:'100%',aspectRatio:tile.crop?`${tile.crop.width*tile.tileWidth}/${tile.crop.height*tile.tileHeight}`:`${tile.tileWidth}/${tile.tileHeight}`,background:'#0b1116'}}>
-      {displayUri&&<img src={displayUri} alt={alt} loading="lazy" style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}} />}
+  return <div className={`assetVisual atlasVisual ${className}`} data-aspect={aspect}>
+    <div className="atlasFrame" style={{position:'relative',overflow:'hidden',width:'100%',aspectRatio:aspectValue(tile,aspect),background:'#05080b'}}>
+      {displayUri&&<img src={displayUri} alt={alt} loading="lazy" style={{width:'100%',height:'100%',objectFit:fit,display:'block'}} />}
+      {badge&&<span className="visualBadge">{badge}</span>}
       {!displayUri&&!error&&<div className="assetLoading">Loading production asset…</div>}
       {error&&<div className="assetLoading">Asset unavailable</div>}
     </div>

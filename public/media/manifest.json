@@ -11,6 +11,10 @@
     "characters": "LOCKED",
     "storyboards": {"EP001":"INTERIM"}
   },
+  "sourceOfTruth": {
+    "charactersV5": "/production-assets/v5/characters/",
+    "storyboards": {"EP001":"/production-assets/v5/storyboards/EP001/manifest.json"}
+  },
   "cover": "/production-assets/individual/cover/casablanca-cover.webp",
   "characters": {
     "CHR-ARGA-01": "/production-assets/individual/characters/arga/",

@@ -28,7 +28,7 @@ function storyboards(){
 export const mediaManifest={
   movie:{
     casablanca:{
-      cover:{id:'MOV-CASABLANCA-COVER',src:'/production-assets/individual/cover/casablanca-cover.webp',ratio:'9:16',width:720,height:1280,state:'LOCKED',downloadName:'03-13-casablanca-cover.webp'} satisfies MediaItem
+      cover:{id:'MOV-CASABLANCA-COVER',src:'/production-assets/individual/cover/casablanca-cover.webp',ratio:'9:16',width:720,height:1280,state:'INTERIM',downloadName:'03-13-casablanca-cover.webp',notes:'Standalone cover path is stable; replace in-place with approved 1080x1920+ source before LOCKED.'} satisfies MediaItem
     }
   },
   characters:{

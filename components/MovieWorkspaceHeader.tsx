@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { casablancaMovie, movieTabs } from '@/lib/produxion';
-import { Base64Image } from '@/components/Base64Image';
+import { AssetVisual } from '@/components/AssetVisual';
+import { casablancaCover } from '@/lib/media-manifest';
 
 export function MovieWorkspaceHeader({ active }: { active:'Dashboard'|'Script'|'Episodes'|'Assets' }){
   return <>
     <section className="movieHero">
       <div className="moviePosterWrap">
-        <Base64Image source="/production-assets/real/casablanca-cover.webp.b64" alt={`${casablancaMovie.title} cover`} className="moviePoster" fit="cover" />
+        <AssetVisual src={casablancaCover.src} alt={`${casablancaMovie.title} cover`} ratio="9:16" fit="cover" className="moviePoster" label={casablancaCover.state}/>
       </div>
       <div className="movieHeroCopy">
         <span className="eyebrow accent">{casablancaMovie.kicker}</span>

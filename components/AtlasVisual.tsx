@@ -12,6 +12,7 @@ export type AtlasTile={
   tileWidth:number;
   tileHeight:number;
   downloadName?:string;
+  crop?:{x:number;y:number;width:number;height:number};
 };
 
 const atlasCache=new Map<string,Promise<string>>();
@@ -27,81 +28,69 @@ function loadAtlas(sources:string[],mime:string){
   return atlasCache.get(key)!;
 }
 
-async function cropBlob(uri:string,tile:AtlasTile){
+async function renderCrop(uri:string,tile:AtlasTile){
   const image=new Image();
   image.src=uri;
   await image.decode();
+  const inner=tile.crop??{x:0,y:0,width:1,height:1};
+  const sx=tile.col*tile.tileWidth+inner.x*tile.tileWidth;
+  const sy=tile.row*tile.tileHeight+inner.y*tile.tileHeight;
+  const sw=inner.width*tile.tileWidth;
+  const sh=inner.height*tile.tileHeight;
   const canvas=document.createElement('canvas');
-  canvas.width=tile.tileWidth;
-  canvas.height=tile.tileHeight;
+  canvas.width=Math.max(1,Math.round(sw));
+  canvas.height=Math.max(1,Math.round(sh));
   const ctx=canvas.getContext('2d');
   if(!ctx) return null;
-  ctx.drawImage(
-    image,
-    tile.col*tile.tileWidth,
-    tile.row*tile.tileHeight,
-    tile.tileWidth,
-    tile.tileHeight,
-    0,0,tile.tileWidth,tile.tileHeight
-  );
-  return await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,'image/png',1));
+  ctx.drawImage(image,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
+  return canvas.toDataURL('image/png',1);
 }
 
 export function AtlasVisual({tile,alt,downloadable=true,className=''}:{tile:AtlasTile;alt:string;downloadable?:boolean;className?:string}){
   const [uri,setUri]=useState('');
+  const [displayUri,setDisplayUri]=useState('');
   const [error,setError]=useState(false);
-  const key=useMemo(()=>tile.sources.join('|'),[tile.sources]);
+  const key=useMemo(()=>`${tile.sources.join('|')}:${tile.col}:${tile.row}:${JSON.stringify(tile.crop??{})}`,[tile.sources,tile.col,tile.row,tile.crop]);
 
   useEffect(()=>{
     let active=true;
     setError(false);
+    setDisplayUri('');
     loadAtlas(tile.sources,tile.mime)
-      .then(value=>active&&setUri(value))
+      .then(async value=>{
+        if(!active) return;
+        setUri(value);
+        const rendered=await renderCrop(value,tile);
+        if(active&&rendered) setDisplayUri(rendered);
+      })
       .catch(()=>active&&setError(true));
     return()=>{active=false};
-  },[key,tile.mime,tile.sources]);
+  },[key,tile.mime]);
 
-  async function downloadCrop(){
-    if(!uri) return;
-    const blob=await cropBlob(uri,tile);
-    if(!blob) return;
-    const url=URL.createObjectURL(blob);
+  function downloadCrop(){
+    if(!displayUri) return;
     const anchor=document.createElement('a');
-    anchor.href=url;
+    anchor.href=displayUri;
     anchor.download=tile.downloadName||`${alt}.png`;
     anchor.click();
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
 
-  async function viewCrop(){
-    if(!uri) return;
-    const blob=await cropBlob(uri,tile);
-    if(!blob) return;
-    const url=URL.createObjectURL(blob);
-    window.open(url,'_blank','noopener,noreferrer');
-    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  function viewCrop(){
+    if(!displayUri) return;
+    const win=window.open();
+    if(win){
+      win.document.write(`<html><body style="margin:0;background:#070b0f;display:grid;place-items:center;min-height:100vh"><img src="${displayUri}" style="max-width:100%;height:auto"/></body></html>`);
+      win.document.close();
+    }
   }
 
   return <div className={`assetVisual atlasVisual ${className}`}>
-    <div style={{position:'relative',overflow:'hidden',width:'100%',aspectRatio:`${tile.tileWidth}/${tile.tileHeight}`,background:'#0b1116'}}>
-      {uri&&<img
-        src={uri}
-        alt={alt}
-        loading="lazy"
-        style={{
-          position:'absolute',
-          width:`${tile.cols*100}%`,
-          height:`${tile.rows*100}%`,
-          maxWidth:'none',
-          left:`-${tile.col*100}%`,
-          top:`-${tile.row*100}%`,
-          objectFit:'fill'
-        }}
-      />}
-      {!uri&&!error&&<div className="assetLoading">Loading production asset…</div>}
+    <div style={{position:'relative',overflow:'hidden',width:'100%',aspectRatio:tile.crop?`${tile.crop.width*tile.tileWidth}/${tile.crop.height*tile.tileHeight}`:`${tile.tileWidth}/${tile.tileHeight}`,background:'#0b1116'}}>
+      {displayUri&&<img src={displayUri} alt={alt} loading="lazy" style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}} />}
+      {!displayUri&&!error&&<div className="assetLoading">Loading production asset…</div>}
       {error&&<div className="assetLoading">Asset unavailable</div>}
     </div>
-    {uri&&<div className="atlasActions">
+    {displayUri&&<div className="atlasActions">
       <button type="button" className="assetDownload" onClick={viewCrop}>View HD</button>
       {downloadable&&<button type="button" className="assetDownload" onClick={downloadCrop}>Download</button>}
     </div>}

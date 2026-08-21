@@ -71,7 +71,9 @@ jobs:
             DIR="public/production-assets/individual/characters/$dest"
             test "$(find "$DIR" -maxdepth 1 -name '*.webp' | wc -l)" -eq 6
             for f in "$DIR"/*.webp; do
-              webpinfo "$f" | grep -q 'Canvas size: 1200 x 1600'
+              INFO="$(webpinfo "$f")"
+              printf '%s\n' "$INFO" | grep -Eq 'Width:[[:space:]]+1200'
+              printf '%s\n' "$INFO" | grep -Eq 'Height:[[:space:]]+1600'
             done
           done
 

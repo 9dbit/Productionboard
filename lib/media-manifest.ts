@@ -6,7 +6,7 @@ const shotIds=['EP001-SC01-SH01','EP001-SC01-SH02','EP001-SC02-SH01','EP001-SC02
 
 function character(slug:string,label:string){
   const base=`/production-assets/individual/characters/${slug}`;
-  const item=(angle:string,file:string):MediaItem=>({id:`${label}-${angle}`,src:`${base}/${file}.webp`,ratio:'3:4',width:600,height:800,state:'INTERIM',downloadName:`${label}-${file}.webp`,notes:'Standalone interim reference. Replace in-place with native 1200x1600+ approved lock image; UI path must not change.'});
+  const item=(angle:string,file:string):MediaItem=>({id:`${label}-${angle}`,src:`${base}/${file}.webp`,ratio:'3:4',width:1200,height:1600,state:'LOCKED',downloadName:`${label}-${file}.webp`,notes:'Approved V5 standalone character lock promoted from native 1200x1600 source. Stable runtime path and Asset ID must not change.'});
   return {
     FRONT:item('FRONT','front'),
     BACK:item('BACK','back'),

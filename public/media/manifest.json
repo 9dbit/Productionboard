@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "project": "03:13 CASABLANCA",
+  "contract": {
+    "cover": {"ratio":"9:16","minimum":"1080x1920","fit":"cover"},
+    "character": {"ratio":"3:4","minimum":"1200x1600","fit":"contain","background":"clean/neutral"},
+    "storyboard": {"ratio":"9:16","minimum":"1080x1920","fit":"contain","oneShotOneFile":true}
+  },
+  "cover": "/production-assets/individual/cover/casablanca-cover.webp",
+  "characters": {
+    "CHR-ARGA-01": "/production-assets/individual/characters/arga/",
+    "CHR-SARI-01": "/production-assets/individual/characters/sari/",
+    "CHR-HARUN-01": "/production-assets/individual/characters/pak-harun/",
+    "CHR-BOWO-01": "/production-assets/individual/characters/bowo/",
+    "CHR-DIMAS-01": "/production-assets/individual/characters/dimas/",
+    "CHR-ENTITY-01": "/production-assets/individual/characters/penumpang-tanpa-wajah/"
+  },
+  "characterAngles": ["front.webp","back.webp","left-profile.webp","right-profile.webp","three-quarter-left.webp","three-quarter-right.webp"],
+  "storyboards": {
+    "EP001": "/production-assets/individual/storyboards/EP001/SH01.webp ... SH16.webp"
+  },
+  "replacementRule": "Replace file in-place with approved native-resolution media. Do not change runtime path or Asset ID.",
+  "legacyRule": "Atlas/contact sheets may be used only as supporting references, never as final character lock, cover, or storyboard master."
+}

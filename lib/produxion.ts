@@ -3,7 +3,7 @@ export const platformMovies = [
     slug:'casablanca',
     title:'03:13 CASABLANCA',
     kicker:'AI HORROR VERTICAL SERIES',
-    cover:'/production-assets/real/casablanca-cover.webp',
+    cover:'/production-assets/individual/cover/casablanca-cover.webp',
     status:'IN PRODUCTION',
     episodes:80,
     synopsis:'Arga, seorang driver online Jakarta, menerima order terakhir dari penumpang bernama Sari. Order itu membawanya ke koridor Casablanca pada pukul 03:13, ketika GPS, pantulan, rekaman CCTV, dan ruang kota mulai berhenti mengikuti logika. Semakin Arga berusaha menjauh, semakin jelas bahwa Sari bukan satu-satunya sesuatu yang menunggu di balik kursi belakang.',

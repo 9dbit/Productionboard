@@ -1,0 +1,79 @@
+name: Import Penumpang Tanpa Wajah V5 media
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - .github/workflows/import-penumpang-tanpa-wajah-v5.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-entity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Download final Entity V5 masters
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/penumpang-tanpa-wajah"
+          mkdir -p "$DEST"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:31ed3a53-9dc7-4231-8ad4-d0408c78cf8a' -o "$DEST/front.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:bf445a82-a51e-47aa-8e61-2451993c789c' -o "$DEST/three-quarter-right.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:8f007a39-0e2c-4a84-ad36-96b2fadbc4f5' -o "$DEST/right-profile.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:d0e131e5-f5d5-4131-8ad7-51a76eb4c43c' -o "$DEST/back.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:6f4be360-7500-40f9-b14a-aec0ed36f053' -o "$DEST/three-quarter-left.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:379bba89-77a0-4a9b-9d49-723918a20e0f' -o "$DEST/left-profile.png"
+
+      - name: Write locked manifest
+        run: |
+          cat > public/production-assets/v5/characters/penumpang-tanpa-wajah/manifest.json <<'JSON'
+          {
+            "schemaVersion": 1,
+            "characterId": "penumpang-tanpa-wajah",
+            "characterName": "Penumpang Tanpa Wajah",
+            "version": "v5",
+            "status": "LOCKED",
+            "format": "PNG",
+            "width": 1200,
+            "height": 1600,
+            "aspectRatio": "3:4",
+            "identityMaster": "front.png",
+            "angles": [
+              {"id":"front","file":"front.png"},
+              {"id":"three-quarter-right","file":"three-quarter-right.png"},
+              {"id":"right-profile","file":"right-profile.png"},
+              {"id":"back","file":"back.png"},
+              {"id":"three-quarter-left","file":"three-quarter-left.png"},
+              {"id":"left-profile","file":"left-profile.png"}
+            ]
+          }
+          JSON
+
+      - name: Validate Entity package
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/penumpang-tanpa-wajah"
+          test "$(find "$DEST" -maxdepth 1 -name '*.png' | wc -l)" -eq 6
+          grep -q '"status": "LOCKED"' "$DEST/manifest.json"
+          for f in "$DEST"/*.png; do
+            file "$f" | grep -q 'PNG image data, 1200 x 1600'
+          done
+
+      - name: Commit Entity package
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/v5/characters/penumpang-tanpa-wajah
+          if git diff --cached --quiet; then
+            echo "No media changes to commit"
+            exit 0
+          fi
+          git commit -m "feat(media-v5): lock Penumpang Tanpa Wajah 6-angle character package"
+          git push origin HEAD:agent/mvp-production-board

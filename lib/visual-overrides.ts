@@ -1,14 +1,17 @@
-import { productionAssetById } from './production-assets';
+import { productionAssetById, storyboardTileForShot } from './production-assets';
 
 export const actualCharacterAngles=['FRONT','BACK','LEFT PROFILE','RIGHT PROFILE','3/4 LEFT','3/4 RIGHT'] as const;
 
+// Master sheets place the usable character row around the center band.
+// These crops intentionally remove the large white margins/title areas so the
+// character fills the portrait lock card instead of floating at the bottom.
 const angleCrop:Record<string,{x:number;y:number;width:number;height:number}>={
-  'FRONT':{x:0.13,y:0.02,width:0.17,height:0.94},
-  '3/4 RIGHT':{x:0.27,y:0.02,width:0.16,height:0.94},
-  'RIGHT PROFILE':{x:0.40,y:0.02,width:0.15,height:0.94},
-  'BACK':{x:0.52,y:0.02,width:0.17,height:0.94},
-  '3/4 LEFT':{x:0.65,y:0.02,width:0.16,height:0.94},
-  'LEFT PROFILE':{x:0.77,y:0.02,width:0.14,height:0.94},
+  'FRONT':{x:0.12,y:0.29,width:0.15,height:0.47},
+  '3/4 RIGHT':{x:0.26,y:0.29,width:0.15,height:0.47},
+  'RIGHT PROFILE':{x:0.39,y:0.29,width:0.14,height:0.47},
+  'BACK':{x:0.52,y:0.29,width:0.15,height:0.47},
+  '3/4 LEFT':{x:0.65,y:0.29,width:0.15,height:0.47},
+  'LEFT PROFILE':{x:0.78,y:0.29,width:0.14,height:0.47},
 };
 
 export function characterAngleTile(assetId:string,angle:string){
@@ -17,26 +20,8 @@ export function characterAngleTile(assetId:string,angle:string){
   return {...asset.atlas,crop:angleCrop[angle],downloadName:`${assetId}-${angle.replaceAll(' ','-')}.png`};
 }
 
-const shotVisualAsset:Record<string,string>={
-  'EP001-SC01-SH01':'ENV-025-A',
-  'EP001-SC01-SH02':'VEH-ARGA-01',
-  'EP001-SC02-SH01':'VEH-ARGA-01',
-  'EP001-SC02-SH02':'CHR-ARGA-01',
-  'EP001-SC03-SH01':'ENV-016-A',
-  'EP001-SC03-SH02':'VEH-ARGA-01',
-  'EP001-SC04-SH01':'VEH-ARGA-01',
-  'EP001-SC04-SH02':'CHR-ARGA-01',
-  'EP001-SC05-SH01':'ENV-001-A',
-  'EP001-SC05-SH02':'ENV-001-A',
-  'EP001-SC06-SH01':'VEH-ARGA-01',
-  'EP001-SC06-SH02':'VEH-ARGA-01',
-  'EP001-SC07-SH01':'VEH-ARGA-01',
-  'EP001-SC07-SH02':'VEH-ARGA-01',
-  'EP001-SC08-SH01':'CHR-ARGA-01',
-  'EP001-SC08-SH02':'CHR-SARI-01',
-};
-
+// Storyboard is its own source of truth. Environment/character assets remain
+// references, but the editor canvas always reads the dedicated SH01–SH16 tile.
 export function storyboardReferenceForShot(shotId:string){
-  const id=shotVisualAsset[shotId];
-  return id?productionAssetById(id)?.atlas??null:null;
+  return storyboardTileForShot(shotId);
 }

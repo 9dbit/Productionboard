@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - agent/mvp-production-board
-    paths:
-      - .github/workflows/promote-character-v5.yml
-      - public/production-assets/v5/characters/**
   workflow_dispatch:
 
 permissions:

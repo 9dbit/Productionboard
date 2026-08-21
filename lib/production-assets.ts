@@ -1,10 +1,9 @@
 export type AtlasTile={sources:string[];mime:'image/webp'|'image/avif';col:number;row:number;cols:number;rows:number;tileWidth:number;tileHeight:number;downloadName?:string};
 export type ProductionAsset={id:string;name:string;kind:'CHARACTER'|'ENVIRONMENT'|'VEHICLE'|'REFERENCE';status:'LOCKED'|'REFERENCE'|'REVIEW';description:string;atlas:AtlasTile;siteId?:string;episodeIds?:string[];sceneIds?:string[];shotIds?:string[];angleCoverage?:string[];storyUse?:string};
 
-const parts=(name:string,count:number)=>Array.from({length:count},(_,i)=>`/production-assets/v4/${name}.${String(i).padStart(2,'0')}.b64`);
-const CHAR_PARTS=parts('characters',3);
-const SITE_PARTS=parts('sites',6);
-const STORY_PARTS=parts('storyboards',1);
+const CHAR_PARTS=['/api/production-media/characters'];
+const SITE_PARTS=['/api/production-media/sites'];
+const STORY_PARTS=['/api/production-media/storyboards'];
 const charTile=(i:number,name:string):AtlasTile=>({sources:CHAR_PARTS,mime:'image/webp',col:i%3,row:Math.floor(i/3),cols:3,rows:3,tileWidth:640,tileHeight:416,downloadName:name});
 const siteTile=(i:number,name:string):AtlasTile=>({sources:SITE_PARTS,mime:'image/webp',col:i%5,row:Math.floor(i/5),cols:5,rows:6,tileWidth:600,tileHeight:350,downloadName:name});
 const storyTile=(i:number,name:string):AtlasTile=>({sources:STORY_PARTS,mime:'image/webp',col:i%4,row:Math.floor(i/4),cols:4,rows:4,tileWidth:640,tileHeight:337,downloadName:name});
@@ -20,7 +19,6 @@ export const productionAssets:ProductionAsset[]=[
   {id:'CHR-SANTOSO-01',name:'Santoso',kind:'REFERENCE',status:'REFERENCE',description:'Sopir taksi generasi lama dan kunci sejarah Pak Harun.',atlas:charTile(6,'CHR-SANTOSO-01.png'),episodeIds:['EP021+'],storyUse:'Foto/rekonstruksi masa lalu.'},
   {id:'CHR-SARI-TURN-01',name:'Sari Turnaround',kind:'REFERENCE',status:'REFERENCE',description:'Turnaround tambahan untuk tubuh, wardrobe dan silhouette Sari.',atlas:charTile(7,'CHR-SARI-TURN-01.png'),episodeIds:['EP001+'],storyUse:'Reference continuity saat image-to-video.'},
   {id:'CHR-MASTER-REF',name:'Master Character Guide',kind:'REFERENCE',status:'REFERENCE',description:'Overview karakter dan hubungan produksi 03:13 Casablanca.',atlas:charTile(8,'CHR-MASTER-REF.png'),storyUse:'Director/editor overview.'},
-
   {id:'ENV-001-B',name:'Casablanca Tunnel Core',kind:'ENVIRONMENT',status:'LOCKED',siteId:'SITE-001',description:'Hero tunnel/underpass Casablanca untuk momen 03:13.',atlas:siteTile(0,'ENV-001-B.png'),episodeIds:['EP001'],sceneIds:['EP001-SC06','EP001-SC08'],shotIds:['EP001-SC06-SH01','EP001-SC08-SH02'],storyUse:'Signature supernatural location.'},
   {id:'ENV-001-A',name:'Casablanca Approach',kind:'ENVIRONMENT',status:'LOCKED',siteId:'SITE-002',description:'Approach sebelum memasuki core Casablanca.',atlas:siteTile(1,'ENV-001-A.png'),episodeIds:['EP001'],sceneIds:['EP001-SC05'],shotIds:['EP001-SC05-SH01','EP001-SC05-SH02'],storyUse:'Traffic menipis dan GPS membawa Arga ke pickup 0 meter.'},
   {id:'ENV-003-A',name:'Casablanca Monochrome Tunnel',kind:'ENVIRONMENT',status:'REFERENCE',siteId:'SITE-003',description:'Variant tunnel dingin/monochrome untuk memory atau CCTV mood.',atlas:siteTile(2,'ENV-003-A.png'),storyUse:'Alternate tunnel language.'},

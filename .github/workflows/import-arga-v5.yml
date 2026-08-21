@@ -19,6 +19,11 @@ jobs:
         with:
           ref: agent/mvp-production-board
 
+      - name: Install image tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick
+
       - name: Download standalone Arga masters
         run: |
           set -euo pipefail
@@ -30,22 +35,59 @@ jobs:
           curl --fail --location --retry 3 'https://at.adobe.com/Q0z3LtLKshU4FVNZ' -o "$DEST/back.png"
           curl --fail --location --retry 3 'https://at.adobe.com/SvINi4dHZDIwsNaG' -o "$DEST/three-quarter-left.png"
           curl --fail --location --retry 3 'https://at.adobe.com/xfFlRPFNOKey4zO3' -o "$DEST/left-profile.png"
-          test -s "$DEST/front.png"
-          test -s "$DEST/three-quarter-right.png"
-          test -s "$DEST/right-profile.png"
-          test -s "$DEST/back.png"
-          test -s "$DEST/three-quarter-left.png"
-          test -s "$DEST/left-profile.png"
-          file "$DEST"/*.png
 
-      - name: Commit Arga V5 binaries
+      - name: Normalize all angles to exact 3:4 portrait
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/arga"
+          for f in "$DEST"/*.png; do
+            convert "$f" -auto-orient -gravity center -resize '1200x1600^' -extent 1200x1600 PNG24:"$f.tmp.png"
+            mv "$f.tmp.png" "$f"
+            dims=$(identify -format '%wx%h' "$f")
+            test "$dims" = "1200x1600"
+          done
+
+      - name: Write locked production manifest
+        run: |
+          cat > public/production-assets/v5/characters/arga/manifest.json <<'JSON'
+          {
+            "schemaVersion": 1,
+            "characterId": "arga-pratama",
+            "characterName": "Arga Pratama",
+            "version": "v5",
+            "status": "LOCKED",
+            "format": "PNG",
+            "width": 1200,
+            "height": 1600,
+            "aspectRatio": "3:4",
+            "identityMaster": "front.png",
+            "angles": [
+              {"id":"front","file":"front.png"},
+              {"id":"three-quarter-right","file":"three-quarter-right.png"},
+              {"id":"right-profile","file":"right-profile.png"},
+              {"id":"back","file":"back.png"},
+              {"id":"three-quarter-left","file":"three-quarter-left.png"},
+              {"id":"left-profile","file":"left-profile.png"}
+            ]
+          }
+          JSON
+
+      - name: Validate media package
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/arga"
+          test "$(find "$DEST" -maxdepth 1 -name '*.png' | wc -l)" -eq 6
+          grep -q '"status": "LOCKED"' "$DEST/manifest.json"
+          identify "$DEST"/*.png
+
+      - name: Commit Arga V5 locked package
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/production-assets/v5/characters/arga/*.png
+          git add public/production-assets/v5/characters/arga
           if git diff --cached --quiet; then
             echo "No media changes to commit"
             exit 0
           fi
-          git commit -m "feat(media-v5): add Arga HD standalone character masters"
+          git commit -m "feat(media-v5): lock Arga 6-angle 3x4 character package"
           git push origin HEAD:agent/mvp-production-board

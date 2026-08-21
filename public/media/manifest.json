@@ -6,6 +6,11 @@
     "character": {"ratio":"3:4","minimum":"1200x1600","fit":"contain","background":"clean/neutral"},
     "storyboard": {"ratio":"9:16","minimum":"1080x1920","fit":"contain","oneShotOneFile":true}
   },
+  "states": {
+    "cover": "INTERIM",
+    "characters": "LOCKED",
+    "storyboards": {"EP001":"INTERIM"}
+  },
   "cover": "/production-assets/individual/cover/casablanca-cover.webp",
   "characters": {
     "CHR-ARGA-01": "/production-assets/individual/characters/arga/",

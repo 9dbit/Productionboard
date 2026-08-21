@@ -1,0 +1,51 @@
+name: Import Arga V5 media
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - .github/workflows/import-arga-v5.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-arga:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Download standalone Arga masters
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/arga"
+          mkdir -p "$DEST"
+          curl --fail --location --retry 3 'https://at.adobe.com/x7X4PjZlv9cuQk7j' -o "$DEST/front.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/DTrxTqfUtcfpdnwq' -o "$DEST/three-quarter-right.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/IlsRSDiNrEAYXSPP' -o "$DEST/right-profile.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/Q0z3LtLKshU4FVNZ' -o "$DEST/back.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/SvINi4dHZDIwsNaG' -o "$DEST/three-quarter-left.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/xfFlRPFNOKey4zO3' -o "$DEST/left-profile.png"
+          test -s "$DEST/front.png"
+          test -s "$DEST/three-quarter-right.png"
+          test -s "$DEST/right-profile.png"
+          test -s "$DEST/back.png"
+          test -s "$DEST/three-quarter-left.png"
+          test -s "$DEST/left-profile.png"
+          file "$DEST"/*.png
+
+      - name: Commit Arga V5 binaries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/v5/characters/arga/*.png
+          if git diff --cached --quiet; then
+            echo "No media changes to commit"
+            exit 0
+          fi
+          git commit -m "feat(media-v5): add Arga HD standalone character masters"
+          git push origin HEAD:agent/mvp-production-board

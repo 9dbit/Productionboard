@@ -2,10 +2,24 @@
   "schemaVersion": 1,
   "episodeId": "EP001",
   "state": "CANDIDATE",
+  "approvalState": "PENDING",
+  "normalization": "preserve source pixels; center-pad near-9:16 source to 1080x1920; never stretch",
   "items": [
-    {"shot":"SH01","assetId":"urn:aaid:sc:AP:c18dc1d0-ff7d-40a4-8ab6-9d81d4e0b793","file":"SH01.png","approvalState":"PENDING","qc":"candidate-pass"},
-    {"shot":"SH02","assetId":"urn:aaid:sc:AP:9bbd9a34-772e-48c5-81e6-846142d2d941","file":"SH02.png","approvalState":"PENDING","qc":"candidate-pass"},
-    {"shot":"SH03","assetId":"urn:aaid:sc:AP:a84c35a5-e667-4bd3-8f75-cb74556a4896","file":"SH03.png","approvalState":"PENDING","qc":"candidate-pass","notes":"Incoming-call MAMA UI corrected before normalization."},
-    {"shot":"SH04","assetId":"urn:aaid:sc:AP:a796994f-42d8-4d04-a15b-c784ddba945c","file":"SH04.png","approvalState":"PENDING","qc":"candidate-pass"}
+    {"shot":"SH01","assetId":"urn:aaid:sc:AP:c18dc1d0-ff7d-40a4-8ab6-9d81d4e0b793","file":"candidates/SH01.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH02","assetId":"urn:aaid:sc:AP:9bbd9a34-772e-48c5-81e6-846142d2d941","file":"candidates/SH02.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH03","assetId":"urn:aaid:sc:AP:b1f1ab71-00fb-40f6-9738-727727363ea1","file":"candidates/SH03.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH04","assetId":"urn:aaid:sc:AP:a796994f-42d8-4d04-a15b-c784ddba945c","file":"candidates/SH04.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH05","assetId":"urn:aaid:sc:AP:89a98f61-a821-4d53-a1bd-ff85c7a8757c","file":"candidates/SH05.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH06","assetId":"urn:aaid:sc:AP:81875ec2-2393-4393-a6b7-07dfe1983ccc","file":"candidates/SH06.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH07","assetId":"urn:aaid:sc:AP:3964e74d-76c8-411f-9c5b-f271e717bda1","file":"candidates/SH07.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH08","assetId":"urn:aaid:sc:AP:427885f5-850e-4c13-986a-43c479fa98f2","file":"candidates/SH08.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH09","assetId":"urn:aaid:sc:AP:8e186312-b7f5-42e5-ba9a-708183e53d1d","file":"candidates/SH09.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH10","assetId":"urn:aaid:sc:AP:d5b5138a-ff28-490b-82bc-cecb18248397","file":"candidates/SH10.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH11","assetId":"urn:aaid:sc:AP:314c68c3-668c-4d5b-96fd-8b60ef4819a4","file":"candidates/SH11.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH12","assetId":"urn:aaid:sc:AP:75bcd35f-864d-4d13-9dd4-f3d034df231b","file":"candidates/SH12.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH13","assetId":"urn:aaid:sc:AP:b1a6fc98-d097-413b-affe-e44de3185279","file":"candidates/SH13.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH14","assetId":"urn:aaid:sc:AP:faa442d0-1765-4afa-b74d-b5e6a7cfdefe","file":"candidates/SH14.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH15","assetId":"urn:aaid:sc:AP:ea06f9eb-5688-455a-bab1-4f567497397f","file":"candidates/SH15.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"},
+    {"shot":"SH16","assetId":"urn:aaid:sc:AP:77d8b72d-1148-479e-a8ad-37364b9b2a9b","file":"candidates/SH16.png","sourceDimensions":"1072x1920","normalization":"CENTER_PAD_1072x1920_TO_1080x1920","sourceState":"CANDIDATE","approvalState":"PENDING"}
   ]
 }

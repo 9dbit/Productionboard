@@ -1,0 +1,22 @@
+name: Validate EP001 Storyboard V5
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - 'public/production-assets/v5/storyboards/EP001/**'
+      - 'scripts/validate-storyboard-v5.mjs'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate storyboard manifest and source masters
+        run: node scripts/validate-storyboard-v5.mjs

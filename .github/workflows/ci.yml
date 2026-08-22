@@ -19,7 +19,7 @@ jobs:
       - run: npm run build
 
   import-ep001-storyboard-candidates:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/mvp-production-board'
+    if: github.head_ref == 'agent/mvp-production-board' || github.ref == 'refs/heads/agent/mvp-production-board'
     runs-on: ubuntu-latest
     permissions:
       contents: write

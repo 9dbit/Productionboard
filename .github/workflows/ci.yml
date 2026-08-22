@@ -68,26 +68,36 @@ jobs:
       - name: Validate 16 native 9x16 masters
         if: steps.gate.outputs.required == 'true'
         run: |
-          set -euo pipefail
+          set -uo pipefail
           DEST="public/production-assets/v5/storyboards/EP001"
-          test "$(find "$DEST" -maxdepth 1 -name 'SH*.png' | wc -l)" -eq 16
+          failed=0
+          count="$(find "$DEST" -maxdepth 1 -name 'SH*.png' | wc -l)"
+          if [ "$count" -ne 16 ]; then
+            echo "FAIL: expected 16 PNG files, found $count"
+            failed=1
+          fi
           for i in $(seq -w 1 16); do
             f="$DEST/SH${i}.png"
-            test -s "$f"
-            format="$(identify -format '%m' "$f")"
-            width="$(identify -format '%w' "$f")"
-            height="$(identify -format '%h' "$f")"
-            test "$format" = "PNG"
-            test "$width" -ge 1080
-            test "$height" -ge 1920
-            python3 - "$width" "$height" <<'PY'
+            if [ ! -s "$f" ]; then
+              echo "SH${i}: FAIL missing/empty"
+              failed=1
+              continue
+            fi
+            format="$(identify -format '%m' "$f" 2>/dev/null || true)"
+            width="$(identify -format '%w' "$f" 2>/dev/null || echo 0)"
+            height="$(identify -format '%h' "$f" 2>/dev/null || echo 0)"
+            verdict="OK"
+            if [ "$format" != "PNG" ]; then verdict="FAIL format=$format"; failed=1; fi
+            if [ "$width" -lt 1080 ] || [ "$height" -lt 1920 ]; then verdict="FAIL minimum"; failed=1; fi
+            if ! python3 - "$width" "$height" <<'PY'
           import sys
           w,h=map(int,sys.argv[1:])
-          if abs((w/h)-(9/16)) > 0.006:
-              raise SystemExit(f'not 9:16: {w}x{h}')
+          raise SystemExit(0 if h and abs((w/h)-(9/16)) <= 0.006 else 1)
           PY
-            echo "SH${i}: ${width}x${height} ${format} OK"
+            then verdict="FAIL ratio"; failed=1; fi
+            echo "SH${i}: ${width}x${height} ${format} ${verdict}"
           done
+          exit "$failed"
 
       - name: Mark package review ready without approving
         if: steps.gate.outputs.required == 'true'

@@ -18,8 +18,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
 
-  import-ep001-storyboards-v5:
-    if: github.event_name == 'pull_request' && github.head_ref == 'agent/mvp-production-board'
+  import-ep001-storyboard-candidates:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/mvp-production-board'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -28,106 +28,92 @@ jobs:
         with:
           ref: agent/mvp-production-board
 
-      - name: Check whether import is still required
+      - name: Check for Adobe import trigger
         id: gate
         run: |
-          if grep -q '"status": "SOURCE_REQUIRED"' public/production-assets/v5/storyboards/EP001/manifest.json; then
-            echo "required=true" >> "$GITHUB_OUTPUT"
+          CONFIG='public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json'
+          if [ -f "$CONFIG" ]; then
+            echo 'required=true' >> "$GITHUB_OUTPUT"
           else
-            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo 'required=false' >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Install image metadata tooling
+      - name: Install image validation tooling
         if: steps.gate.outputs.required == 'true'
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y imagemagick
+          sudo apt-get install -y imagemagick jq
 
-      - name: Download selected EP001 V5 masters
+      - name: Download Adobe candidates
         if: steps.gate.outputs.required == 'true'
         run: |
           set -euo pipefail
-          DEST="public/production-assets/v5/storyboards/EP001"
-          curl --fail --location --retry 3 'https://at.adobe.com/5KmFAo3j0urkGXHD' -o "$DEST/SH01.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/3qyRggvLITbsKZUP' -o "$DEST/SH02.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/Sem5MyoIqiS6Vwtf' -o "$DEST/SH03.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/mGCeMJSTwRtLW8vv' -o "$DEST/SH04.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/aob0nR9qKr2TIRC0' -o "$DEST/SH05.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/Uk9c5IcpCMraYzvl' -o "$DEST/SH06.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/PwuLwHaGNPsU8Jet' -o "$DEST/SH07.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/ROhjXRsNt5sEnYiz' -o "$DEST/SH08.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/4EXtYuqifkmf4Coz' -o "$DEST/SH09.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/Mgr9mBQ7IyU6dEzJ' -o "$DEST/SH10.png"
-          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:03f156c1-5c8a-4076-be5f-0c85cfafeb48' -o "$DEST/SH11.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/BXqMbZqzMsUhKXhJ' -o "$DEST/SH12.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/bJQ2OimXWEbzFBEv' -o "$DEST/SH13.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/W8lD8aZCMTDmYYPU' -o "$DEST/SH14.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/ViaQ1y5WEPjBvM8c' -o "$DEST/SH15.png"
-          curl --fail --location --retry 3 'https://at.adobe.com/HV6McWKhHuC1wdHV' -o "$DEST/SH16.png"
+          CONFIG='public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json'
+          DEST='public/production-assets/v5/storyboards/EP001/candidates'
+          mkdir -p "$DEST"
 
-      - name: Validate 16 native 9x16 masters
+          count="$(jq '.items | length' "$CONFIG")"
+          test "$count" -eq 16
+
+          REGISTRY="$(mktemp)"
+          printf '{\n  "schemaVersion": 1,\n  "episodeId": "EP001",\n  "state": "CANDIDATE",\n  "approvalState": "PENDING",\n  "items": [\n' > "$REGISTRY"
+          first=1
+
+          for row in $(jq -r '.items[] | @base64' "$CONFIG"); do
+            value() { printf '%s' "$row" | base64 --decode | jq -r "$1"; }
+            shot="$(value '.shot')"
+            url="$(value '.downloadUrl')"
+            asset_id="$(value '.assetId')"
+
+            case "$shot" in
+              SH0[1-9]|SH1[0-6]) ;;
+              *) echo "Invalid shot name: $shot"; exit 1 ;;
+            esac
+
+            tmp="$(mktemp)"
+            echo "Downloading $shot"
+            curl --fail --location --retry 3 --retry-delay 2 "$url" --output "$tmp"
+
+            dims="$(identify -format '%w %h' "$tmp" 2>/dev/null || true)"
+            if [ "$dims" != '1080 1920' ]; then
+              echo "$shot invalid native dimensions: ${dims:-unreadable}; expected 1080 1920"
+              exit 1
+            fi
+
+            convert "$tmp" -strip PNG32:"$DEST/$shot.png"
+            test "$(identify -format '%w %h' "$DEST/$shot.png")" = '1080 1920'
+            rm -f "$tmp"
+
+            if [ "$first" -eq 0 ]; then printf ',\n' >> "$REGISTRY"; fi
+            first=0
+            printf '    {"shot":"%s","assetId":"%s","file":"candidates/%s.png","sourceState":"CANDIDATE","approvalState":"PENDING"}' "$shot" "$asset_id" "$shot" >> "$REGISTRY"
+          done
+
+          printf '\n  ]\n}\n' >> "$REGISTRY"
+          mv "$REGISTRY" 'public/production-assets/v5/storyboards/EP001/candidate-sources.json'
+
+      - name: Validate imported candidate set
         if: steps.gate.outputs.required == 'true'
         run: |
-          set -uo pipefail
-          DEST="public/production-assets/v5/storyboards/EP001"
-          failed=0
-          count="$(find "$DEST" -maxdepth 1 -name 'SH*.png' | wc -l)"
-          if [ "$count" -ne 16 ]; then
-            echo "FAIL: expected 16 PNG files, found $count"
-            failed=1
-          fi
+          set -euo pipefail
+          DEST='public/production-assets/v5/storyboards/EP001/candidates'
+          test "$(find "$DEST" -maxdepth 1 -name 'SH*.png' | wc -l)" -eq 16
           for i in $(seq -w 1 16); do
             f="$DEST/SH${i}.png"
-            if [ ! -s "$f" ]; then
-              echo "SH${i}: FAIL missing/empty"
-              failed=1
-              continue
-            fi
-            format="$(identify -format '%m' "$f" 2>/dev/null || true)"
-            width="$(identify -format '%w' "$f" 2>/dev/null || echo 0)"
-            height="$(identify -format '%h' "$f" 2>/dev/null || echo 0)"
-            verdict="OK"
-            if [ "$format" != "PNG" ]; then verdict="FAIL format=$format"; failed=1; fi
-            if [ "$width" -lt 1080 ] || [ "$height" -lt 1920 ]; then verdict="FAIL minimum"; failed=1; fi
-            if ! python3 - "$width" "$height" <<'PY'
-          import sys
-          w,h=map(int,sys.argv[1:])
-          raise SystemExit(0 if h and abs((w/h)-(9/16)) <= 0.006 else 1)
-          PY
-            then verdict="FAIL ratio"; failed=1; fi
-            echo "SH${i}: ${width}x${height} ${format} ${verdict}"
+            test -s "$f"
+            test "$(identify -format '%m' "$f")" = 'PNG'
+            test "$(identify -format '%w %h' "$f")" = '1080 1920'
+            echo "SH${i}: 1080x1920 PNG candidate OK"
           done
-          exit "$failed"
 
-      - name: Mark package review ready without approving
+      - name: Commit candidates without approval
         if: steps.gate.outputs.required == 'true'
         run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          path=Path('public/production-assets/v5/storyboards/EP001/manifest.json')
-          data=json.loads(path.read_text())
-          data['status']='REVIEW_READY'
-          data['reviewGate']={
-              'visualQCPassed': True,
-              'qcScope': 'identity, continuity, framing, story accuracy, explicit UI/time text',
-              'approvalRequired': True,
-              'approvedCount': 0,
-              'total': data['shotCount'],
-              'note': 'Selected masters passed assistant visual QC. Human review remains required before LOCKED/runtime promotion.'
-          }
-          for shot in data['shots']:
-              shot['sourceState']='REVIEW_READY'
-              shot['approvalState']='PENDING'
-          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
-          PY
-
-      - name: Commit V5 storyboard review package
-        if: steps.gate.outputs.required == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/production-assets/v5/storyboards/EP001
-          git commit -m "feat(storyboard-v5): import EP001 review-ready masters"
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json
+          git add public/production-assets/v5/storyboards/EP001/candidates public/production-assets/v5/storyboards/EP001/candidate-sources.json
+          git commit -m 'feat(storyboard-v5): import Adobe EP001 candidates'
           git pull --rebase origin agent/mvp-production-board
           git push origin HEAD:agent/mvp-production-board

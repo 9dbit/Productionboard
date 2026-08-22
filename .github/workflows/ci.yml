@@ -17,3 +17,107 @@ jobs:
       - run: npm install
       - run: npm run typecheck
       - run: npm run build
+
+  import-ep001-storyboards-v5:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/mvp-production-board'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Check whether import is still required
+        id: gate
+        run: |
+          if grep -q '"status": "SOURCE_REQUIRED"' public/production-assets/v5/storyboards/EP001/manifest.json; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "required=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install image metadata tooling
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick
+
+      - name: Download selected EP001 V5 masters
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/storyboards/EP001"
+          curl --fail --location --retry 3 'https://at.adobe.com/5KmFAo3j0urkGXHD' -o "$DEST/SH01.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/3qyRggvLITbsKZUP' -o "$DEST/SH02.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/Sem5MyoIqiS6Vwtf' -o "$DEST/SH03.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/mGCeMJSTwRtLW8vv' -o "$DEST/SH04.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/aob0nR9qKr2TIRC0' -o "$DEST/SH05.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/Uk9c5IcpCMraYzvl' -o "$DEST/SH06.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/PwuLwHaGNPsU8Jet' -o "$DEST/SH07.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/ROhjXRsNt5sEnYiz' -o "$DEST/SH08.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/4EXtYuqifkmf4Coz' -o "$DEST/SH09.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/Mgr9mBQ7IyU6dEzJ' -o "$DEST/SH10.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:03f156c1-5c8a-4076-be5f-0c85cfafeb48' -o "$DEST/SH11.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/BXqMbZqzMsUhKXhJ' -o "$DEST/SH12.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/bJQ2OimXWEbzFBEv' -o "$DEST/SH13.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/W8lD8aZCMTDmYYPU' -o "$DEST/SH14.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/ViaQ1y5WEPjBvM8c' -o "$DEST/SH15.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/HV6McWKhHuC1wdHV' -o "$DEST/SH16.png"
+
+      - name: Validate 16 native 9x16 masters
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/storyboards/EP001"
+          test "$(find "$DEST" -maxdepth 1 -name 'SH*.png' | wc -l)" -eq 16
+          for i in $(seq -w 1 16); do
+            f="$DEST/SH${i}.png"
+            test -s "$f"
+            format="$(identify -format '%m' "$f")"
+            width="$(identify -format '%w' "$f")"
+            height="$(identify -format '%h' "$f")"
+            test "$format" = "PNG"
+            test "$width" -ge 1080
+            test "$height" -ge 1920
+            python3 - "$width" "$height" <<'PY'
+          import sys
+          w,h=map(int,sys.argv[1:])
+          if abs((w/h)-(9/16)) > 0.006:
+              raise SystemExit(f'not 9:16: {w}x{h}')
+          PY
+            echo "SH${i}: ${width}x${height} ${format} OK"
+          done
+
+      - name: Mark package review ready without approving
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('public/production-assets/v5/storyboards/EP001/manifest.json')
+          data=json.loads(path.read_text())
+          data['status']='REVIEW_READY'
+          data['reviewGate']={
+              'visualQCPassed': True,
+              'qcScope': 'identity, continuity, framing, story accuracy, explicit UI/time text',
+              'approvalRequired': True,
+              'approvedCount': 0,
+              'total': data['shotCount'],
+              'note': 'Selected masters passed assistant visual QC. Human review remains required before LOCKED/runtime promotion.'
+          }
+          for shot in data['shots']:
+              shot['sourceState']='REVIEW_READY'
+              shot['approvalState']='PENDING'
+          path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+          PY
+
+      - name: Commit V5 storyboard review package
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/v5/storyboards/EP001
+          git commit -m "feat(storyboard-v5): import EP001 review-ready masters"
+          git pull --rebase origin agent/mvp-production-board
+          git push origin HEAD:agent/mvp-production-board

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "EP001",
+  "state": "CANDIDATE",
+  "items": [
+    {"shot":"SH01","assetId":"urn:aaid:sc:AP:c18dc1d0-ff7d-40a4-8ab6-9d81d4e0b793","file":"SH01.png","approvalState":"PENDING","qc":"candidate-pass"},
+    {"shot":"SH02","assetId":"urn:aaid:sc:AP:9bbd9a34-772e-48c5-81e6-846142d2d941","file":"SH02.png","approvalState":"PENDING","qc":"candidate-pass"},
+    {"shot":"SH03","assetId":"urn:aaid:sc:AP:a84c35a5-e667-4bd3-8f75-cb74556a4896","file":"SH03.png","approvalState":"PENDING","qc":"candidate-pass","notes":"Incoming-call MAMA UI corrected before normalization."},
+    {"shot":"SH04","assetId":"urn:aaid:sc:AP:a796994f-42d8-4d04-a15b-c784ddba945c","file":"SH04.png","approvalState":"PENDING","qc":"candidate-pass"}
+  ]
+}

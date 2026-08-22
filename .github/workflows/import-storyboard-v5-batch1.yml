@@ -1,0 +1,79 @@
+name: Import EP001 storyboard V5 batch 1
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - .github/workflows/import-storyboard-v5-batch1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-storyboards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Install validation tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick
+
+      - name: Download approved-for-review Adobe masters
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/storyboards/EP001"
+          mkdir -p "$DEST"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:24db752c-69f8-439f-92d6-f19956902121' -o "$DEST/SH01.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:697508a8-6cfe-4f32-afee-d61b90150caa' -o "$DEST/SH02.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:ba0284b8-bf82-429f-93f6-d747e6c74081' -o "$DEST/SH03.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:9229bef9-d2e6-4aa6-8b28-0fd659ae4cf7' -o "$DEST/SH04.png"
+
+      - name: Validate exact V5 dimensions
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/storyboards/EP001"
+          for shot in SH01 SH02 SH03 SH04; do
+            test -s "$DEST/$shot.png"
+            test "$(identify -format '%wx%h' "$DEST/$shot.png")" = "1080x1920"
+          done
+          identify "$DEST"/SH0{1,2,3,4}.png
+
+      - name: Write batch provenance
+        run: |
+          cat > public/production-assets/v5/storyboards/EP001/batch-01-provenance.json <<'JSON'
+          {
+            "batch": "SH01-SH04",
+            "state": "PENDING",
+            "runtimePromoted": false,
+            "source": "Adobe Firefly/Photoshop API",
+            "target": {"width":1080,"height":1920,"ratio":"9:16"},
+            "shots": {
+              "SH01": {"sourceAsset":"urn:aaid:sc:AP:c18dc1d0-ff7d-40a4-8ab6-9d81d4e0b793","qc":"candidate-pass"},
+              "SH02": {"sourceAsset":"urn:aaid:sc:AP:9bbd9a34-772e-48c5-81e6-846142d2d941","qc":"candidate-pass"},
+              "SH03": {"sourceAsset":"urn:aaid:sc:AP:a84c35a5-e667-4bd3-8f75-cb74556a4896","edit":"incoming-call MAMA UI","qc":"candidate-pass"},
+              "SH04": {"sourceAsset":"urn:aaid:sc:AP:a796994f-42d8-4d04-a15b-c784ddba945c","qc":"candidate-pass"}
+            }
+          }
+          JSON
+
+      - name: Commit candidate batch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/v5/storyboards/EP001/SH01.png \
+                  public/production-assets/v5/storyboards/EP001/SH02.png \
+                  public/production-assets/v5/storyboards/EP001/SH03.png \
+                  public/production-assets/v5/storyboards/EP001/SH04.png \
+                  public/production-assets/v5/storyboards/EP001/batch-01-provenance.json
+          if git diff --cached --quiet; then
+            echo "Batch 1 already current"
+            exit 0
+          fi
+          git commit -m "feat(storyboard-v5): import EP001 SH01-SH04 pending masters"
+          git push origin HEAD:agent/mvp-production-board

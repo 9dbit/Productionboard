@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "EP001",
+  "storyboardVersion": "v5",
+  "generatedAt": "2026-08-22",
+  "summary": {
+    "shots": 16,
+    "characterLocksReady": true,
+    "productionDependenciesReady": false,
+    "readyForFinalGeneration": 0,
+    "blocked": 16
+  },
+  "availableLocks": [
+    "CHR-ARGA-01",
+    "CHR-SARI-01"
+  ],
+  "requiredLocks": [
+    {
+      "id": "VEH-ARGA-01",
+      "kind": "VEHICLE",
+      "state": "SOURCE_REQUIRED",
+      "priority": 1,
+      "requiredViews": [
+        "exterior-front-3q",
+        "exterior-rear-3q",
+        "exterior-side",
+        "driver-interior-wide",
+        "dashboard-driver-pov",
+        "rear-seat-from-front",
+        "rear-view-mirror-composition"
+      ]
+    },
+    {
+      "id": "ENV-025-A",
+      "kind": "ENVIRONMENT",
+      "name": "Kuningan / City Transition",
+      "state": "SOURCE_REQUIRED",
+      "priority": 2,
+      "requiredViews": ["night-wide", "wet-road-tracking", "office-skyline"]
+    },
+    {
+      "id": "ENV-016-A",
+      "kind": "ENVIRONMENT",
+      "name": "Lobby / Pickup Zone",
+      "state": "SOURCE_REQUIRED",
+      "priority": 3,
+      "requiredViews": ["building-lobby-wide", "pickup-curb", "vehicle-stop-angle"]
+    },
+    {
+      "id": "ENV-001-A",
+      "kind": "ENVIRONMENT",
+      "name": "Casablanca Approach",
+      "state": "SOURCE_REQUIRED",
+      "priority": 4,
+      "requiredViews": ["approach-wide", "vehicle-entry", "zero-meter-stop"]
+    },
+    {
+      "id": "ENV-001-B",
+      "kind": "ENVIRONMENT",
+      "name": "Casablanca Night Core",
+      "state": "SOURCE_REQUIRED",
+      "priority": 5,
+      "requiredViews": ["underpass-core", "tunnel-reflection", "03-13-night-lock"]
+    },
+    {
+      "id": "PROP-PHONE-01",
+      "kind": "PROP",
+      "name": "Phone / Ride Hailing UI",
+      "state": "SOURCE_REQUIRED",
+      "priority": 6,
+      "requiredViews": ["mounted-phone", "incoming-call", "order-card", "blank-destination", "sari-message"]
+    },
+    {
+      "id": "PROP-MIRROR-01",
+      "kind": "PROP",
+      "name": "Rear-view Mirror",
+      "state": "SOURCE_REQUIRED",
+      "priority": 7,
+      "requiredViews": ["mirror-empty-rear-seat", "mirror-tunnel-reflection", "mirror-sari-reveal"]
+    }
+  ],
+  "shotReadiness": [
+    {"shot":"SH01","blockedBy":["VEH-ARGA-01","ENV-025-A"]},
+    {"shot":"SH02","blockedBy":["VEH-ARGA-01"]},
+    {"shot":"SH03","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
+    {"shot":"SH04","blockedBy":["VEH-ARGA-01"]},
+    {"shot":"SH05","blockedBy":["VEH-ARGA-01","ENV-016-A"]},
+    {"shot":"SH06","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
+    {"shot":"SH07","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
+    {"shot":"SH08","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
+    {"shot":"SH09","blockedBy":["VEH-ARGA-01","ENV-001-A"]},
+    {"shot":"SH10","blockedBy":["VEH-ARGA-01","ENV-001-A"]},
+    {"shot":"SH11","blockedBy":["VEH-ARGA-01","ENV-001-B"]},
+    {"shot":"SH12","blockedBy":["VEH-ARGA-01","PROP-MIRROR-01"]},
+    {"shot":"SH13","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
+    {"shot":"SH14","blockedBy":["VEH-ARGA-01","PROP-MIRROR-01"]},
+    {"shot":"SH15","blockedBy":["VEH-ARGA-01"]},
+    {"shot":"SH16","blockedBy":["VEH-ARGA-01","ENV-001-B","PROP-MIRROR-01"]}
+  ],
+  "generationOrder": [
+    "VEH-ARGA-01",
+    "ENV-025-A",
+    "ENV-016-A",
+    "ENV-001-A",
+    "ENV-001-B",
+    "PROP-PHONE-01",
+    "PROP-MIRROR-01",
+    "SH01-SH16"
+  ],
+  "rule": "Do not mark any EP001 V5 storyboard shot as final-ready until every dependency listed for that shot has an approved locked master. Interim runtime images may remain visible but are not production masters."
+}

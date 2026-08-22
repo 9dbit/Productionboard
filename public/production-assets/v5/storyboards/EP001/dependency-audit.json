@@ -1,24 +1,162 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "episodeId": "EP001",
   "storyboardVersion": "v5",
   "generatedAt": "2026-08-22",
+  "auditedCommit": "f02b8cf998a8962798d14b7f078bd80fdd3a3d08",
+  "governance": {
+    "storyboardState": "CANDIDATE",
+    "approvalState": "PENDING",
+    "promotionRecommendation": "HOLD",
+    "humanApprovalRequired": true,
+    "promotionPath": [
+      "CANDIDATE",
+      "REVIEW",
+      "APPROVED",
+      "LOCKED"
+    ],
+    "rule": "Import success and technical validity do not imply visual approval or continuity approval."
+  },
   "summary": {
     "shots": 16,
+    "technicalCandidateIngestReady": true,
+    "technicalCandidateCount": 16,
     "characterLocksReady": true,
     "productionDependenciesReady": false,
+    "readyForReviewPromotion": 0,
     "readyForFinalGeneration": 0,
-    "blocked": 16
+    "blocked": 16,
+    "visualPass": 0,
+    "needsMasterLock": 5,
+    "regenerate": 10,
+    "manualReview": 1
   },
   "availableLocks": [
-    "CHR-ARGA-01",
-    "CHR-SARI-01"
+    {
+      "id": "CHR-ARGA-01",
+      "kind": "CHARACTER",
+      "state": "LOCKED",
+      "format": "PNG",
+      "dimensions": "1200x1600",
+      "aspectRatio": "3:4",
+      "identityMaster": "public/production-assets/v5/characters/arga/front.png",
+      "angleFiles": [
+        "front.png",
+        "three-quarter-right.png",
+        "right-profile.png",
+        "back.png",
+        "three-quarter-left.png",
+        "left-profile.png"
+      ],
+      "adobeProvenance": {
+        "front": "urn:aaid:sc:AP:04ece850-539b-43ff-a68d-debf5b67faf8",
+        "threeQuarterRight": "urn:aaid:sc:AP:55f1d302-74be-46e1-80fa-b9a520bc1d1e",
+        "rightProfile": "urn:aaid:sc:AP:f5ef1db8-e2e1-43ad-9879-f2eff0c21962",
+        "back": "urn:aaid:sc:AP:3731192a-81f8-4615-b2bc-a07c64ec0c20",
+        "threeQuarterLeft": "urn:aaid:sc:AP:b6561f15-f193-449d-b08b-1907c1c83ed3",
+        "leftProfile": "urn:aaid:sc:AP:17703f5a-f1fd-4005-b414-1a9c106adbdc"
+      }
+    },
+    {
+      "id": "CHR-SARI-01",
+      "kind": "CHARACTER",
+      "state": "LOCKED",
+      "format": "PNG",
+      "dimensions": "1200x1600",
+      "aspectRatio": "3:4",
+      "identityMaster": "public/production-assets/v5/characters/sari/front.png",
+      "angleFiles": [
+        "front.png",
+        "three-quarter-right.png",
+        "right-profile.png",
+        "back.png",
+        "three-quarter-left.png",
+        "left-profile.png"
+      ],
+      "adobeProvenance": {
+        "front": "urn:aaid:sc:AP:dcb1b860-e82d-46e1-a40a-070c0e904d21",
+        "threeQuarterRight": "urn:aaid:sc:AP:dabe1849-7500-4acf-b105-9240ae83b6a6",
+        "rightProfile": "urn:aaid:sc:AP:6860b2c0-dd15-40ca-92cf-c74e3615c6fe",
+        "back": "urn:aaid:sc:AP:ae734d74-0741-404b-a6fe-f6ce6340d190",
+        "threeQuarterLeft": "urn:aaid:sc:AP:bba96b39-b9d6-4526-ac3a-8f15fa25f4ae",
+        "leftProfile": "urn:aaid:sc:AP:eb3561fe-ec50-4a81-ae1b-9a2112bb9f63"
+      }
+    }
+  ],
+  "masterCandidates": [
+    {
+      "id": "VEH-ARGA-01",
+      "kind": "VEHICLE",
+      "state": "CANDIDATE",
+      "approvalState": "PENDING",
+      "identityProposal": "Dark gray compact five-door hatchback",
+      "source": "Adobe Firefly",
+      "candidateViews": [
+        {
+          "role": "exterior-front-3q",
+          "assetId": "urn:aaid:sc:AP:d97e762b-80e5-4d70-90d6-994f7b8309f1"
+        },
+        {
+          "role": "exterior-side",
+          "assetId": "urn:aaid:sc:AP:820ec594-3ed5-4db6-a56c-4dcb216913b4"
+        },
+        {
+          "role": "exterior-rear-3q",
+          "assetId": "urn:aaid:sc:AP:187f21be-9a16-4288-8243-50c8fef11440"
+        },
+        {
+          "role": "interior-rhd-wide",
+          "assetId": "urn:aaid:sc:AP:33b7a0f0-5273-4b67-897d-839e4e8439f1"
+        },
+        {
+          "role": "interior-passenger-side",
+          "assetId": "urn:aaid:sc:AP:e6d455ff-fe79-4eeb-b257-95247cb886e9"
+        },
+        {
+          "role": "rear-view-mirror-reference",
+          "assetId": "urn:aaid:sc:AP:caf0e818-c344-4b43-bd28-fe477767dca4"
+        }
+      ],
+      "excludedCandidates": [
+        {
+          "role": "cutaway-interior",
+          "assetId": "urn:aaid:sc:AP:9146cd56-3896-4e64-a931-151bb8a6beb8",
+          "reason": "Steering-side interpretation is ambiguous and must not define the Indonesian right-hand-drive lock."
+        }
+      ],
+      "passes": [
+        "Exterior identity is consistent across front, side and rear views.",
+        "Primary interior candidate reads as right-hand drive.",
+        "Black seat and dark dashboard language is coherent."
+      ],
+      "blockers": [
+        "Human approval of exterior identity is still required.",
+        "Dashboard driver POV is missing.",
+        "Phone holder position is not proven.",
+        "Rear-seat-from-front view is missing.",
+        "Mirror geometry has only one usable reference."
+      ],
+      "recommendation": "MANUAL_REVIEW"
+    },
+    {
+      "id": "PROP-MIRROR-01",
+      "kind": "PROP",
+      "state": "CANDIDATE",
+      "approvalState": "PENDING",
+      "sourceAssetId": "urn:aaid:sc:AP:caf0e818-c344-4b43-bd28-fe477767dca4",
+      "blockers": [
+        "Empty rear-seat framing, tunnel reflection and Sari reveal variants are still required.",
+        "Must inherit approved VEH-ARGA-01 geometry."
+      ],
+      "recommendation": "NEEDS_MASTER_LOCK"
+    }
   ],
   "requiredLocks": [
     {
       "id": "VEH-ARGA-01",
       "kind": "VEHICLE",
-      "state": "SOURCE_REQUIRED",
+      "state": "CANDIDATE",
+      "approvalState": "PENDING",
       "priority": 1,
       "requiredViews": [
         "exterior-front-3q",
@@ -35,77 +173,283 @@
       "kind": "ENVIRONMENT",
       "name": "Kuningan / City Transition",
       "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING",
       "priority": 2,
-      "requiredViews": ["night-wide", "wet-road-tracking", "office-skyline"]
+      "requiredViews": [
+        "night-wide",
+        "wet-road-tracking",
+        "office-skyline"
+      ]
     },
     {
       "id": "ENV-016-A",
       "kind": "ENVIRONMENT",
       "name": "Lobby / Pickup Zone",
       "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING",
       "priority": 3,
-      "requiredViews": ["building-lobby-wide", "pickup-curb", "vehicle-stop-angle"]
+      "requiredViews": [
+        "building-lobby-wide",
+        "pickup-curb",
+        "vehicle-stop-angle"
+      ]
     },
     {
       "id": "ENV-001-A",
       "kind": "ENVIRONMENT",
       "name": "Casablanca Approach",
       "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING",
       "priority": 4,
-      "requiredViews": ["approach-wide", "vehicle-entry", "zero-meter-stop"]
+      "requiredViews": [
+        "approach-wide",
+        "vehicle-entry",
+        "zero-meter-stop"
+      ]
     },
     {
       "id": "ENV-001-B",
       "kind": "ENVIRONMENT",
       "name": "Casablanca Night Core",
       "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING",
       "priority": 5,
-      "requiredViews": ["underpass-core", "tunnel-reflection", "03-13-night-lock"]
+      "requiredViews": [
+        "underpass-core",
+        "tunnel-reflection",
+        "03-13-night-lock"
+      ]
     },
     {
       "id": "PROP-PHONE-01",
       "kind": "PROP",
       "name": "Phone / Ride Hailing UI",
       "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING",
       "priority": 6,
-      "requiredViews": ["mounted-phone", "incoming-call", "order-card", "blank-destination", "sari-message"]
+      "requiredViews": [
+        "mounted-phone",
+        "incoming-call-MAMA",
+        "order-card-SARI-5.0-Rp287000",
+        "blank-destination",
+        "Sari-message-Saya-sudah-di-mobil"
+      ]
     },
     {
       "id": "PROP-MIRROR-01",
       "kind": "PROP",
       "name": "Rear-view Mirror",
-      "state": "SOURCE_REQUIRED",
+      "state": "CANDIDATE",
+      "approvalState": "PENDING",
       "priority": 7,
-      "requiredViews": ["mirror-empty-rear-seat", "mirror-tunnel-reflection", "mirror-sari-reveal"]
+      "requiredViews": [
+        "mirror-empty-rear-seat",
+        "mirror-tunnel-reflection",
+        "mirror-Sari-reveal"
+      ]
+    }
+  ],
+  "uiStatusCorrections": [
+    {
+      "id": "VEH-ARGA-01",
+      "from": "LOCKED",
+      "to": "REVIEW"
+    },
+    {
+      "id": "ENV-025-A",
+      "from": "LOCKED",
+      "to": "REVIEW"
+    },
+    {
+      "id": "ENV-016-A",
+      "from": "LOCKED",
+      "to": "REVIEW"
+    },
+    {
+      "id": "ENV-001-A",
+      "from": "LOCKED",
+      "to": "REVIEW"
+    },
+    {
+      "id": "ENV-001-B",
+      "from": "LOCKED",
+      "to": "REVIEW"
     }
   ],
   "shotReadiness": [
-    {"shot":"SH01","blockedBy":["VEH-ARGA-01","ENV-025-A"]},
-    {"shot":"SH02","blockedBy":["VEH-ARGA-01"]},
-    {"shot":"SH03","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
-    {"shot":"SH04","blockedBy":["VEH-ARGA-01"]},
-    {"shot":"SH05","blockedBy":["VEH-ARGA-01","ENV-016-A"]},
-    {"shot":"SH06","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
-    {"shot":"SH07","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
-    {"shot":"SH08","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
-    {"shot":"SH09","blockedBy":["VEH-ARGA-01","ENV-001-A"]},
-    {"shot":"SH10","blockedBy":["VEH-ARGA-01","ENV-001-A"]},
-    {"shot":"SH11","blockedBy":["VEH-ARGA-01","ENV-001-B"]},
-    {"shot":"SH12","blockedBy":["VEH-ARGA-01","PROP-MIRROR-01"]},
-    {"shot":"SH13","blockedBy":["VEH-ARGA-01","PROP-PHONE-01"]},
-    {"shot":"SH14","blockedBy":["VEH-ARGA-01","PROP-MIRROR-01"]},
-    {"shot":"SH15","blockedBy":["VEH-ARGA-01"]},
-    {"shot":"SH16","blockedBy":["VEH-ARGA-01","ENV-001-B","PROP-MIRROR-01"]}
+    {
+      "shot": "SH01",
+      "classification": "NEEDS_MASTER_LOCK",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "ENV-025-A"
+      ],
+      "reason": "Opening composition is usable, but hero car and Kuningan master are not approved."
+    },
+    {
+      "shot": "SH02",
+      "classification": "NEEDS_MASTER_LOCK",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01"
+      ],
+      "reason": "Arga lock exists, but interior identity is not approved."
+    },
+    {
+      "shot": "SH03",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-PHONE-01"
+      ],
+      "reason": "Arga identity differs and the incoming MAMA call UI is missing."
+    },
+    {
+      "shot": "SH04",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01"
+      ],
+      "reason": "Arga face, age and hair do not match CHR-ARGA-01."
+    },
+    {
+      "shot": "SH05",
+      "classification": "NEEDS_MASTER_LOCK",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "ENV-016-A"
+      ],
+      "reason": "Pickup composition is usable, but character, vehicle and lobby continuity are not locked."
+    },
+    {
+      "shot": "SH06",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-PHONE-01"
+      ],
+      "reason": "Rating 5.0 is missing and dashboard/wardrobe continuity fails."
+    },
+    {
+      "shot": "SH07",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-PHONE-01"
+      ],
+      "reason": "UI is unreadable and the blank destination state is not exact."
+    },
+    {
+      "shot": "SH08",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-PHONE-01"
+      ],
+      "reason": "Countdown and accept action are unclear and Arga identity differs."
+    },
+    {
+      "shot": "SH09",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "ENV-001-A"
+      ],
+      "reason": "Vehicle becomes a black SUV and Casablanca continuity is not established."
+    },
+    {
+      "shot": "SH10",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "ENV-001-A",
+        "PROP-PHONE-01"
+      ],
+      "reason": "Vehicle changes again, GPS 0 meter is absent and lighting is too bright."
+    },
+    {
+      "shot": "SH11",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "ENV-001-B"
+      ],
+      "reason": "Dashboard clock is malformed instead of exact 03:13:00."
+    },
+    {
+      "shot": "SH12",
+      "classification": "NEEDS_MASTER_LOCK",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-MIRROR-01"
+      ],
+      "reason": "Empty-mirror concept works, but Arga and mirror geometry are inconsistent."
+    },
+    {
+      "shot": "SH13",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-PHONE-01"
+      ],
+      "reason": "SARI is misspelled as SARII and UI contains duplicate/gibberish elements."
+    },
+    {
+      "shot": "SH14",
+      "classification": "MANUAL_REVIEW",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "PROP-MIRROR-01"
+      ],
+      "reason": "Strong empty-mirror composition, pending comparison with approved mirror geometry."
+    },
+    {
+      "shot": "SH15",
+      "classification": "NEEDS_MASTER_LOCK",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01"
+      ],
+      "reason": "H3 reaction beat is usable, but Arga identity is unresolved."
+    },
+    {
+      "shot": "SH16",
+      "classification": "REGENERATE",
+      "technical": "PASS",
+      "blockedBy": [
+        "VEH-ARGA-01",
+        "ENV-001-B",
+        "PROP-MIRROR-01"
+      ],
+      "reason": "Mirror geometry changes and random watermark-like dashboard text is visible."
+    }
   ],
   "generationOrder": [
-    "VEH-ARGA-01",
+    "HUMAN_APPROVE_VEHICLE_IDENTITY",
+    "GENERATE_MISSING_VEHICLE_VIEWS",
     "ENV-025-A",
     "ENV-016-A",
     "ENV-001-A",
     "ENV-001-B",
     "PROP-PHONE-01",
     "PROP-MIRROR-01",
-    "SH01-SH16"
+    "REGENERATE_FLAGGED_SHOTS",
+    "REIMPORT_AS_CANDIDATE",
+    "CONTINUITY_AUDIT",
+    "HUMAN_REVIEW_PROMOTION"
   ],
-  "rule": "Do not mark any EP001 V5 storyboard shot as final-ready until every dependency listed for that shot has an approved locked master. Interim runtime images may remain visible but are not production masters."
+  "rule": "Do not mark any EP001 V5 storyboard shot as REVIEW, APPROVED, LOCKED or final-ready until every dependency listed for that shot has an approved locked master and a human approval record."
 }

@@ -1,0 +1,88 @@
+name: Import Adobe EP001 storyboard candidates
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - 'public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Install image validation tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick jq
+
+      - name: Download and validate Adobe candidates
+        run: |
+          set -euo pipefail
+          CONFIG='public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json'
+          DEST='public/production-assets/v5/storyboards/EP001/candidates'
+          mkdir -p "$DEST"
+          count="$(jq '.items | length' "$CONFIG")"
+          test "$count" -ge 1
+          test "$count" -le 16
+
+          REGISTRY="$(mktemp)"
+          printf '{\n  "schemaVersion": 1,\n  "episodeId": "EP001",\n  "state": "CANDIDATE",\n  "items": [\n' > "$REGISTRY"
+
+          first=1
+          for row in $(jq -r '.items[] | @base64' "$CONFIG"); do
+            value() { printf '%s' "$row" | base64 --decode | jq -r "$1"; }
+            shot="$(value '.shot')"
+            url="$(value '.downloadUrl')"
+            asset_id="$(value '.assetId')"
+            case "$shot" in
+              SH0[1-9]|SH1[0-6]) ;;
+              *) echo "Invalid shot name: $shot"; exit 1 ;;
+            esac
+            tmp="$(mktemp)"
+            echo "Downloading $shot from Adobe"
+            curl --fail --location --retry 3 --retry-delay 2 "$url" --output "$tmp"
+
+            dims="$(identify -format '%w %h' "$tmp" 2>/dev/null || true)"
+            if [ "$dims" != '1080 1920' ]; then
+              echo "$shot has invalid native dimensions: ${dims:-unreadable}; expected 1080 1920"
+              exit 1
+            fi
+
+            convert "$tmp" -strip PNG32:"$DEST/$shot.png"
+            verified="$(identify -format '%w %h' "$DEST/$shot.png")"
+            test "$verified" = '1080 1920'
+            rm -f "$tmp"
+
+            if [ "$first" -eq 0 ]; then printf ',\n' >> "$REGISTRY"; fi
+            first=0
+            printf '    {"shot":"%s","assetId":"%s","file":"candidates/%s.png","approvalState":"PENDING"}' "$shot" "$asset_id" "$shot" >> "$REGISTRY"
+          done
+
+          printf '\n  ]\n}\n' >> "$REGISTRY"
+          mv "$REGISTRY" 'public/production-assets/v5/storyboards/EP001/candidate-sources.json'
+
+      - name: Validate candidate package
+        run: |
+          set -euo pipefail
+          DEST='public/production-assets/v5/storyboards/EP001/candidates'
+          for f in "$DEST"/SH*.png; do
+            test "$(identify -format '%w %h' "$f")" = '1080 1920'
+          done
+
+      - name: Commit candidates and remove ephemeral import trigger
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json
+          git add public/production-assets/v5/storyboards/EP001/candidates public/production-assets/v5/storyboards/EP001/candidate-sources.json
+          git commit -m 'feat(storyboard-v5): import Adobe EP001 candidates'
+          git push origin HEAD:agent/mvp-production-board

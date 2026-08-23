@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "episodeId": "EP001",
   "storyboardVersion": "v5",
-  "generatedAt": "2026-08-22",
-  "auditedCommit": "f02b8cf998a8962798d14b7f078bd80fdd3a3d08",
+  "generatedAt": "2026-08-23",
+  "auditedCommit": "7ee980abdcd15f943f403874a533ea3a5ed6d511",
   "governance": {
     "storyboardState": "CANDIDATE",
     "approvalState": "PENDING",
@@ -27,8 +27,8 @@
     "readyForFinalGeneration": 0,
     "blocked": 16,
     "visualPass": 0,
-    "needsMasterLock": 5,
-    "regenerate": 10,
+    "needsMasterLock": 6,
+    "regenerate": 9,
     "manualReview": 1
   },
   "availableLocks": [
@@ -327,13 +327,13 @@
     },
     {
       "shot": "SH06",
-      "classification": "REGENERATE",
+      "classification": "NEEDS_MASTER_LOCK",
       "technical": "PASS",
       "blockedBy": [
         "VEH-ARGA-01",
         "PROP-PHONE-01"
       ],
-      "reason": "Rating 5.0 is missing and dashboard/wardrobe continuity fails."
+      "reason": "Right-hand-drive composition, Arga identity and the SARI 5.0 / Rp287.000 order card are corrected; vehicle interior and phone UI still require master lock and human review."
     },
     {
       "shot": "SH07",

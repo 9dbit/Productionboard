@@ -3,7 +3,7 @@
   "episodeId": "EP001",
   "storyboardVersion": "v5",
   "generatedAt": "2026-08-23",
-  "auditedCommit": "7ee980abdcd15f943f403874a533ea3a5ed6d511",
+  "auditedCommit": "ba1dc6b5ddba410af5b80d1e5ba27e47e62d60fb",
   "governance": {
     "storyboardState": "CANDIDATE",
     "approvalState": "PENDING",
@@ -333,7 +333,7 @@
         "VEH-ARGA-01",
         "PROP-PHONE-01"
       ],
-      "reason": "Right-hand-drive composition, Arga identity and the SARI 5.0 / Rp287.000 order card are corrected; vehicle interior and phone UI still require master lock and human review."
+      "reason": "Passenger-left camera angle now shows Arga in left profile inside the right-side driver seat, and the GrabCar order UI is readable; vehicle interior and phone UI still require master lock and human review."
     },
     {
       "shot": "SH07",

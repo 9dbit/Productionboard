@@ -8,8 +8,16 @@
   },
   "states": {
     "cover": "INTERIM",
-    "characters": "LOCKED",
+    "characters": "REVIEW",
     "storyboards": {"EP001":"INTERIM"}
+  },
+  "characterStates": {
+    "CHR-ARGA-01": "LOCKED",
+    "CHR-SARI-01": "LOCKED",
+    "CHR-HARUN-01": "LOCKED",
+    "CHR-BOWO-01": "LOCKED",
+    "CHR-DIMAS-01": "LOCKED",
+    "CHR-ENTITY-01": "REVIEW"
   },
   "sourceOfTruth": {
     "charactersV5": "/production-assets/v5/characters/",

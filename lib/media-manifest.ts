@@ -17,6 +17,28 @@ function character(slug:string,label:string){
   };
 }
 
+function entityCharacter(){
+  const base='/production-assets/individual/characters/penumpang-tanpa-wajah';
+  const front:MediaItem={
+    id:'Penumpang-Tanpa-Wajah-FRONT',
+    src:`${base}/front.webp`,
+    ratio:'3:4',
+    width:1200,
+    height:1600,
+    state:'LOCKED',
+    downloadName:'Penumpang-Tanpa-Wajah-front.webp',
+    notes:'Human-approved CHR-ENTITY-01 identity master. Adobe provenance is recorded in the V5 character manifest. Other angles remain SOURCE REQUIRED.'
+  };
+  return {
+    FRONT:front,
+    BACK:null,
+    'LEFT PROFILE':null,
+    'RIGHT PROFILE':null,
+    '3/4 LEFT':null,
+    '3/4 RIGHT':null,
+  };
+}
+
 function storyboards(){
   return Object.fromEntries(shotIds.map((shotId,index)=>{
     const file=`SH${String(index+1).padStart(2,'0')}`;
@@ -37,13 +59,16 @@ export const mediaManifest={
     'CHR-HARUN-01':character('pak-harun','Pak-Harun'),
     'CHR-BOWO-01':character('bowo','Bowo'),
     'CHR-DIMAS-01':character('dimas','Dimas'),
-    'CHR-ENTITY-01':character('penumpang-tanpa-wajah','Penumpang-Tanpa-Wajah'),
+    'CHR-ENTITY-01':entityCharacter(),
   },
   storyboards:storyboards(),
 } as const;
 
 export const lockedCharacterAngles=['FRONT','BACK','LEFT PROFILE','RIGHT PROFILE','3/4 LEFT','3/4 RIGHT'] as const;
 export type LockedCharacterAngle=(typeof lockedCharacterAngles)[number];
-export function characterMedia(characterId:string,angle:LockedCharacterAngle){return mediaManifest.characters[characterId as keyof typeof mediaManifest.characters]?.[angle]??null;}
+export function characterMedia(characterId:string,angle:LockedCharacterAngle):MediaItem|null{
+  const character=mediaManifest.characters[characterId as keyof typeof mediaManifest.characters] as Partial<Record<LockedCharacterAngle,MediaItem|null>>|undefined;
+  return character?.[angle]??null;
+}
 export function storyboardMedia(shotId:string){return mediaManifest.storyboards[shotId as keyof typeof mediaManifest.storyboards]??null;}
 export const casablancaCover=mediaManifest.movie.casablanca.cover;

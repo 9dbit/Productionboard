@@ -22,7 +22,7 @@ Each locked character uses six standalone WebP files:
 - 3/4 LEFT
 - 3/4 RIGHT
 
-Current locked V5 runtime canvas: **1200 × 1600 (3:4)**.
+Locked V5 runtime canvas: **1200 × 1600 (3:4)**.
 
 Characters covered:
 
@@ -31,9 +31,9 @@ Characters covered:
 - Pak Harun
 - Bowo
 - Dimas
-- Penumpang Tanpa Wajah
+- Hantu Wanita — Penumpang Tanpa Wajah (`FRONT` only)
 
-Total locked runtime character images: **36**.
+Current locked runtime character images: **31**. Arga, Sari, Pak Harun, Bowo, and Dimas have six locked angles each. `CHR-ENTITY-01` has one human-approved locked `FRONT`; its remaining five legacy angle files are superseded and surface as **SOURCE REQUIRED** until regenerated from the new identity master.
 
 The approved PNG masters live under `public/production-assets/v5/characters/` and are promoted in-place to the stable runtime WebP paths under `public/production-assets/individual/characters/`.
 
@@ -70,8 +70,8 @@ The Episode Storyboard page and Shot Inspector must continue rendering the stabl
 
 Before Replit pulls the branch:
 
-- character V5 package remains complete and locked;
-- six runtime angle files exist for every locked character at 1200 × 1600;
+- every character angle shown as `LOCKED` has a real approved V5 source;
+- partially locked character packages truthfully surface missing angles as `SOURCE REQUIRED`;
 - cover state is represented truthfully;
 - SH01–SH16 runtime files exist;
 - storyboard V5 is not marked `LOCKED` before all 16 approved 1080 × 1920 masters exist;

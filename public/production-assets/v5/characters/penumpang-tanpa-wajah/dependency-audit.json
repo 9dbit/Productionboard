@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "characterId": "CHR-ENTITY-01",
+  "identityMaster": "front.png",
+  "identityMasterState": "LOCKED",
+  "approvedOn": "2026-08-23",
+  "scope": {
+    "declaredEpisodeRange": "EP041+",
+    "explicitNarrativeAnchorEpisodes": ["EP045", "EP046", "EP047", "EP048", "EP049", "EP050"],
+    "detailedSceneIdsCurrentlyMapped": [],
+    "sceneDiscoveryRule": "Any scene or shot whose characterIds or assetIds contains CHR-ENTITY-01 is downstream of this identity master."
+  },
+  "continuityLock": {
+    "hair": "Extremely long, dense black hair reaching the floor",
+    "face": "Use the approved FRONT appearance and degree of hair occlusion; do not substitute a different identity",
+    "wardrobe": "Distressed white dress with dark red staining",
+    "hands": "Long curled black fingernails",
+    "silhouette": "Tall narrow silhouette with heavy hair mass on both sides"
+  },
+  "downstreamPolicy": {
+    "existingLegacyAngles": "SUPERSEDED",
+    "newAngleState": "CANDIDATE",
+    "newSceneState": "CANDIDATE",
+    "approvalState": "PENDING",
+    "promotionRule": "Each generated angle and scene requires visual continuity review and explicit human approval before REVIEW, APPROVED, or LOCKED promotion."
+  },
+  "exclusions": [
+    "EP001 Sari reveal shots use CHR-SARI-01 and must not be replaced by CHR-ENTITY-01.",
+    "Updating this identity master does not change any storyboard approval state."
+  ]
+}

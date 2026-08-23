@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "episodeId": "EP001",
+  "sourceState": "CANDIDATE",
+  "approvalState": "PENDING",
+  "reason": "Replace EP001-SC03-SH02 (global SH06) with left-side-profile Indonesian right-hand-drive GrabCar-order candidate; revalidate full 16-shot set.",
+  "items": [
+    {
+      "shot": "SH01",
+      "assetId": "urn:aaid:sc:AP:c18dc1d0-ff7d-40a4-8ab6-9d81d4e0b793",
+      "downloadUrl": "https://at.adobe.com/G5TAsXw12aolqCHq"
+    },
+    {
+      "shot": "SH02",
+      "assetId": "urn:aaid:sc:AP:9bbd9a34-772e-48c5-81e6-846142d2d941",
+      "downloadUrl": "https://at.adobe.com/yKjvE4kQJQHlJajn"
+    },
+    {
+      "shot": "SH03",
+      "assetId": "urn:aaid:sc:AP:b1f1ab71-00fb-40f6-9738-727727363ea1",
+      "downloadUrl": "https://at.adobe.com/E1AniJZ8dnsblbFX"
+    },
+    {
+      "shot": "SH04",
+      "assetId": "urn:aaid:sc:AP:a796994f-42d8-4d04-a15b-c784ddba945c",
+      "downloadUrl": "https://at.adobe.com/ya0LQGEieaxAjdeq"
+    },
+    {
+      "shot": "SH05",
+      "assetId": "urn:aaid:sc:AP:89a98f61-a821-4d53-a1bd-ff85c7a8757c",
+      "downloadUrl": "https://at.adobe.com/knSQqFh3pI6p0MuA"
+    },
+    {
+      "shot": "SH06",
+      "assetId": "urn:aaid:sc:AP:ac6c20ba-d39b-4f23-8ff8-e1257923fdab",
+      "downloadUrl": "https://at.adobe.com/JJcdG5UvDKQo979i"
+    },
+    {
+      "shot": "SH07",
+      "assetId": "urn:aaid:sc:AP:3964e74d-76c8-411f-9c5b-f271e717bda1",
+      "downloadUrl": "https://at.adobe.com/pdfNlONgjs2D5BwX"
+    },
+    {
+      "shot": "SH08",
+      "assetId": "urn:aaid:sc:AP:427885f5-850e-4c13-986a-43c479fa98f2",
+      "downloadUrl": "https://at.adobe.com/5qH6y0If3Q01yETT"
+    },
+    {
+      "shot": "SH09",
+      "assetId": "urn:aaid:sc:AP:8e186312-b7f5-42e5-ba9a-708183e53d1d",
+      "downloadUrl": "https://at.adobe.com/2Pi8juMmu4RdkkiU"
+    },
+    {
+      "shot": "SH10",
+      "assetId": "urn:aaid:sc:AP:d5b5138a-ff28-490b-82bc-cecb18248397",
+      "downloadUrl": "https://at.adobe.com/wZvOY8usxIjyEzy3"
+    },
+    {
+      "shot": "SH11",
+      "assetId": "urn:aaid:sc:AP:314c68c3-668c-4d5b-96fd-8b60ef4819a4",
+      "downloadUrl": "https://at.adobe.com/L5yWD17LVuQTDMeR"
+    },
+    {
+      "shot": "SH12",
+      "assetId": "urn:aaid:sc:AP:75bcd35f-864d-4d13-9dd4-f3d034df231b",
+      "downloadUrl": "https://at.adobe.com/GQeQKnbWkKpQO85m"
+    },
+    {
+      "shot": "SH13",
+      "assetId": "urn:aaid:sc:AP:b1a6fc98-d097-413b-affe-e44de3185279",
+      "downloadUrl": "https://at.adobe.com/l3WCNzh4CP6o5a9t"
+    },
+    {
+      "shot": "SH14",
+      "assetId": "urn:aaid:sc:AP:faa442d0-1765-4afa-b74d-b5e6a7cfdefe",
+      "downloadUrl": "https://at.adobe.com/1tGAcONb7f1mlZ3b"
+    },
+    {
+      "shot": "SH15",
+      "assetId": "urn:aaid:sc:AP:ea06f9eb-5688-455a-bab1-4f567497397f",
+      "downloadUrl": "https://at.adobe.com/es3SINc7vPx1zkYU"
+    },
+    {
+      "shot": "SH16",
+      "assetId": "urn:aaid:sc:AP:77d8b72d-1148-479e-a8ad-37364b9b2a9b",
+      "downloadUrl": "https://at.adobe.com/6OumUdf6sR3VoPLK"
+    }
+  ]
+}

@@ -159,7 +159,7 @@
       "environmentId": "VEH-ARGA-01",
       "characterIds": ["CHR-ARGA-01"],
       "assetIds": ["PROP-PHONE-01", "VEH-ARGA-01"],
-      "prompt": "Locked car interior; destination field is blank; Arga is confused, not frightened; same dashboard and phone holder; H1."
+      "prompt": "Locked right-hand-drive car interior; camera is inside the front passenger seat on vehicle left, looking toward Arga seated fully inside the driver seat on vehicle right; mounted phone foreground with GrabCar destination field blank; steering wheel aligned with Arga; Arga is confused, not frightened; same dashboard and phone holder; H1."
     },
     {
       "index": 8,

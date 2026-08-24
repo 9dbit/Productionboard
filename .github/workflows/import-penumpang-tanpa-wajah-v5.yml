@@ -1,0 +1,138 @@
+name: Import approved CHR-ENTITY-01 FRONT master
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - .github/workflows/import-penumpang-tanpa-wajah-v5.yml
+      - public/production-assets/v5/characters/penumpang-tanpa-wajah/.adobe-front-import.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-approved-front:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Check for approved Adobe import trigger
+        id: gate
+        run: |
+          CONFIG='public/production-assets/v5/characters/penumpang-tanpa-wajah/.adobe-front-import.json'
+          if [ -f "$CONFIG" ]; then
+            echo 'required=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'required=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install image validation tooling
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick jq
+
+      - name: Import approved identity master
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          CONFIG='public/production-assets/v5/characters/penumpang-tanpa-wajah/.adobe-front-import.json'
+          DEST='public/production-assets/v5/characters/penumpang-tanpa-wajah'
+          RUNTIME='public/production-assets/individual/characters/penumpang-tanpa-wajah'
+          tmp="$(mktemp)"
+
+          test "$(jq -r '.characterId' "$CONFIG")" = 'CHR-ENTITY-01'
+          test "$(jq -r '.approvalState' "$CONFIG")" = 'APPROVED'
+          asset_id="$(jq -r '.assetId' "$CONFIG")"
+          request_id="$(jq -r '.requestId' "$CONFIG")"
+          approved_on="$(jq -r '.approvedOn' "$CONFIG")"
+          url="$(jq -r '.downloadUrl' "$CONFIG")"
+
+          curl --fail --location --retry 3 --retry-delay 2 "$url" --output "$tmp"
+          format="$(identify -format '%m' "$tmp")"
+          source_width="$(identify -format '%w' "$tmp")"
+          source_height="$(identify -format '%h' "$tmp")"
+          test "$format" = 'PNG'
+          test "$source_width" -ge 1200
+          test "$source_height" -ge 1600
+
+          mkdir -p "$DEST" "$RUNTIME"
+          convert "$tmp" -auto-orient -resize '1200x1600>' -background '#17191c' -gravity center -extent 1200x1600 -strip PNG24:"$DEST/front.png"
+          convert "$DEST/front.png" -quality 92 "$RUNTIME/front.webp"
+          test "$(identify -format '%w %h' "$DEST/front.png")" = '1200 1600'
+          test "$(identify -format '%w %h' "$RUNTIME/front.webp")" = '1200 1600'
+
+          source_sha="$(sha256sum "$tmp" | cut -d' ' -f1)"
+          normalized_sha="$(sha256sum "$DEST/front.png" | cut -d' ' -f1)"
+          rm -f "$tmp"
+
+          jq -n \
+            --arg assetId "$asset_id" \
+            --arg requestId "$request_id" \
+            --arg approvedOn "$approved_on" \
+            --argjson sourceWidth "$source_width" \
+            --argjson sourceHeight "$source_height" \
+            --arg sourceSha "$source_sha" \
+            --arg normalizedSha "$normalized_sha" \
+            '{
+              schemaVersion: 2,
+              characterId: "CHR-ENTITY-01",
+              legacySlug: "penumpang-tanpa-wajah",
+              characterName: "Hantu Wanita — Penumpang Tanpa Wajah",
+              version: "v5",
+              status: "REVIEW",
+              approvalState: "APPROVED",
+              approvedBy: "HUMAN",
+              approvedOn: $approvedOn,
+              format: "PNG",
+              width: 1200,
+              height: 1600,
+              aspectRatio: "3:4",
+              identityMaster: "front.png",
+              identityMasterState: "LOCKED",
+              lockedAngles: ["front"],
+              provenance: {
+                provider: "Adobe Firefly",
+                assetId: $assetId,
+                requestId: $requestId,
+                sourceDimensions: {width: $sourceWidth, height: $sourceHeight},
+                normalization: {
+                  method: "contain-center-pad",
+                  outputDimensions: {width: 1200, height: 1600},
+                  background: "#17191c",
+                  stretch: false,
+                  compositionCrop: false
+                },
+                sourceSha256: $sourceSha,
+                normalizedSha256: $normalizedSha
+              },
+              angles: [
+                {id:"front",file:"front.png",state:"LOCKED",approvalState:"APPROVED"},
+                {id:"three-quarter-right",legacyFile:"three-quarter-right.png",state:"SOURCE_REQUIRED",approvalState:"PENDING"},
+                {id:"right-profile",legacyFile:"right-profile.png",state:"SOURCE_REQUIRED",approvalState:"PENDING"},
+                {id:"back",legacyFile:"back.png",state:"SOURCE_REQUIRED",approvalState:"PENDING"},
+                {id:"three-quarter-left",legacyFile:"three-quarter-left.png",state:"SOURCE_REQUIRED",approvalState:"PENDING"},
+                {id:"left-profile",legacyFile:"left-profile.png",state:"SOURCE_REQUIRED",approvalState:"PENDING"}
+              ],
+              legacyAnglePolicy: "Legacy non-front files remain for traceability only and must not be consumed or presented as current locks."
+            }' > "$DEST/manifest.json"
+
+      - name: Commit master and remove temporary URL
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          CONFIG='public/production-assets/v5/characters/penumpang-tanpa-wajah/.adobe-front-import.json'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm "$CONFIG"
+          git add \
+            public/production-assets/v5/characters/penumpang-tanpa-wajah/front.png \
+            public/production-assets/v5/characters/penumpang-tanpa-wajah/manifest.json \
+            public/production-assets/individual/characters/penumpang-tanpa-wajah/front.webp
+          git commit -m 'feat(media-v5): lock approved CHR-ENTITY-01 front master'
+          git pull --rebase origin agent/mvp-production-board
+          git push origin HEAD:agent/mvp-production-board

@@ -1,0 +1,86 @@
+name: Promote EP001 storyboard V5 to runtime
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ep001-storyboard-v5-promotion
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Install WebP tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y webp
+
+      - name: Validate approved V5 storyboard package
+        run: |
+          set -euo pipefail
+          SRC_DIR="public/production-assets/v5/storyboards/EP001"
+          MANIFEST="$SRC_DIR/manifest.json"
+
+          test -f "$MANIFEST"
+          grep -q '"status": "LOCKED"' "$MANIFEST"
+          grep -q '"shotCount": 16' "$MANIFEST"
+          grep -q '"width": 1080' "$MANIFEST"
+          grep -q '"height": 1920' "$MANIFEST"
+          test "$(find "$SRC_DIR" -maxdepth 1 -name 'SH*.png' | wc -l)" -eq 16
+
+          for n in $(seq -w 1 16); do
+            f="$SRC_DIR/SH${n}.png"
+            test -f "$f"
+            file "$f" | grep -q 'PNG image data, 1080 x 1920'
+          done
+
+          DUPLICATE_COUNT="$(sha256sum "$SRC_DIR"/SH*.png | awk '{print $1}' | sort | uniq -d | wc -l)"
+          test "$DUPLICATE_COUNT" -eq 0
+
+      - name: Convert approved PNG masters to stable WebP runtime paths
+        run: |
+          set -euo pipefail
+          SRC_DIR="public/production-assets/v5/storyboards/EP001"
+          DEST_DIR="public/production-assets/individual/storyboards/EP001"
+          mkdir -p "$DEST_DIR"
+
+          for n in $(seq -w 1 16); do
+            cwebp -quiet -q 95 -m 6 "$SRC_DIR/SH${n}.png" -o "$DEST_DIR/SH${n}.webp"
+          done
+
+      - name: Validate runtime output
+        run: |
+          set -euo pipefail
+          DEST_DIR="public/production-assets/individual/storyboards/EP001"
+          test "$(find "$DEST_DIR" -maxdepth 1 -name 'SH*.webp' | wc -l)" -eq 16
+
+          for n in $(seq -w 1 16); do
+            f="$DEST_DIR/SH${n}.webp"
+            INFO="$(webpinfo "$f")"
+            printf '%s\n' "$INFO" | grep -Eq 'Width:[[:space:]]+1080'
+            printf '%s\n' "$INFO" | grep -Eq 'Height:[[:space:]]+1920'
+          done
+
+      - name: Commit promoted storyboard runtime media
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/individual/storyboards/EP001
+
+          if git diff --cached --quiet; then
+            echo "EP001 storyboard runtime media already current"
+            exit 0
+          fi
+
+          git commit -m "feat(storyboard-v5): promote approved EP001 masters to runtime"
+          git pull --rebase origin agent/mvp-production-board
+          git push origin HEAD:agent/mvp-production-board

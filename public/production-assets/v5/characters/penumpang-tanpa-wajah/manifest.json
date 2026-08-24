@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "characterId": "CHR-ENTITY-01",
+  "legacySlug": "penumpang-tanpa-wajah",
+  "characterName": "Hantu Wanita — Penumpang Tanpa Wajah",
+  "version": "v5",
+  "status": "REVIEW",
+  "approvalState": "APPROVED",
+  "approvedBy": "HUMAN",
+  "approvedOn": "2026-08-23",
+  "format": "PNG",
+  "width": 1200,
+  "height": 1600,
+  "aspectRatio": "3:4",
+  "identityMaster": "front.png",
+  "identityMasterState": "LOCKED",
+  "lockedAngles": [
+    "front"
+  ],
+  "provenance": {
+    "provider": "Adobe Firefly",
+    "assetId": "urn:aaid:ps:US:4b2c1231-e79e-4d51-bd3e-56f571f2702d",
+    "requestId": "dd34c134-03c0-4b2b-bec9-b64aaea020b9",
+    "sourceDimensions": {
+      "width": 1792,
+      "height": 2304
+    },
+    "normalization": {
+      "method": "contain-center-pad",
+      "outputDimensions": {
+        "width": 1200,
+        "height": 1600
+      },
+      "background": "#17191c",
+      "stretch": false,
+      "compositionCrop": false
+    },
+    "sourceSha256": "58bd46ccb1bdb10e36f8a3bcfc55669bf12050a9d836c9448b8600e8fe8060d3",
+    "normalizedSha256": "103e0395b7ce042ce297aba291153ccdc8cdca95b8468b916a9eae8ca79b903b"
+  },
+  "angles": [
+    {
+      "id": "front",
+      "file": "front.png",
+      "state": "LOCKED",
+      "approvalState": "APPROVED"
+    },
+    {
+      "id": "three-quarter-right",
+      "legacyFile": "three-quarter-right.png",
+      "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING"
+    },
+    {
+      "id": "right-profile",
+      "legacyFile": "right-profile.png",
+      "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING"
+    },
+    {
+      "id": "back",
+      "legacyFile": "back.png",
+      "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING"
+    },
+    {
+      "id": "three-quarter-left",
+      "legacyFile": "three-quarter-left.png",
+      "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING"
+    },
+    {
+      "id": "left-profile",
+      "legacyFile": "left-profile.png",
+      "state": "SOURCE_REQUIRED",
+      "approvalState": "PENDING"
+    }
+  ],
+  "legacyAnglePolicy": "Legacy non-front files remain for traceability only and must not be consumed or presented as current locks."
+}

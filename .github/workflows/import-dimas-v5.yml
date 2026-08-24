@@ -1,0 +1,79 @@
+name: Import Dimas V5 media
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - .github/workflows/import-dimas-v5.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-dimas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Download final Dimas V5 masters
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/dimas"
+          mkdir -p "$DEST"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:bffdf4ae-ade9-41e9-9423-973a8a4c35de' -o "$DEST/front.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:1294930b-04bf-4e62-a55c-e9b24a347285' -o "$DEST/three-quarter-right.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:be99fb96-927d-45a6-9e2f-c477535d6415' -o "$DEST/right-profile.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:00361c2e-2517-401e-8593-7092cbb46a37' -o "$DEST/back.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:2efbee45-2526-4c7f-984c-b7c3d1ca641f' -o "$DEST/three-quarter-left.png"
+          curl --fail --location --retry 3 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:52d96830-85f8-45c1-ae1b-cddf305d940f' -o "$DEST/left-profile.png"
+
+      - name: Write locked manifest
+        run: |
+          cat > public/production-assets/v5/characters/dimas/manifest.json <<'JSON'
+          {
+            "schemaVersion": 1,
+            "characterId": "dimas",
+            "characterName": "Dimas",
+            "version": "v5",
+            "status": "LOCKED",
+            "format": "PNG",
+            "width": 1200,
+            "height": 1600,
+            "aspectRatio": "3:4",
+            "identityMaster": "front.png",
+            "angles": [
+              {"id":"front","file":"front.png"},
+              {"id":"three-quarter-right","file":"three-quarter-right.png"},
+              {"id":"right-profile","file":"right-profile.png"},
+              {"id":"back","file":"back.png"},
+              {"id":"three-quarter-left","file":"three-quarter-left.png"},
+              {"id":"left-profile","file":"left-profile.png"}
+            ]
+          }
+          JSON
+
+      - name: Validate Dimas package
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/dimas"
+          test "$(find "$DEST" -maxdepth 1 -name '*.png' | wc -l)" -eq 6
+          grep -q '"status": "LOCKED"' "$DEST/manifest.json"
+          for f in "$DEST"/*.png; do
+            file "$f" | grep -q 'PNG image data, 1200 x 1600'
+          done
+
+      - name: Commit Dimas package
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/v5/characters/dimas
+          if git diff --cached --quiet; then
+            echo "No media changes to commit"
+            exit 0
+          fi
+          git commit -m "feat(media-v5): lock Dimas 6-angle 3x4 character package"
+          git push origin HEAD:agent/mvp-production-board

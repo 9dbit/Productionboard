@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'agent/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
+
+  import-ep001-storyboard-candidates:
+    if: github.head_ref == 'agent/mvp-production-board' || github.ref == 'refs/heads/agent/mvp-production-board'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Check for Adobe import trigger
+        id: gate
+        run: |
+          CONFIG='public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json'
+          if [ -f "$CONFIG" ]; then
+            echo 'required=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'required=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install image validation tooling
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick jq
+
+      - name: Download Adobe candidates
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          CONFIG='public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json'
+          DEST='public/production-assets/v5/storyboards/EP001/candidates'
+          mkdir -p "$DEST"
+
+          count="$(jq '.items | length' "$CONFIG")"
+          test "$count" -eq 16
+
+          REGISTRY="$(mktemp)"
+          printf '{\n  "schemaVersion": 1,\n  "episodeId": "EP001",\n  "state": "CANDIDATE",\n  "approvalState": "PENDING",\n  "normalization": "preserve source pixels; center-pad near-9:16 source to 1080x1920; never stretch",\n  "items": [\n' > "$REGISTRY"
+          first=1
+
+          for row in $(jq -r '.items[] | @base64' "$CONFIG"); do
+            value() { printf '%s' "$row" | base64 --decode | jq -r "$1"; }
+            shot="$(value '.shot')"
+            url="$(value '.downloadUrl')"
+            asset_id="$(value '.assetId')"
+
+            case "$shot" in
+              SH0[1-9]|SH1[0-6]) ;;
+              *) echo "Invalid shot name: $shot"; exit 1 ;;
+            esac
+
+            tmp="$(mktemp)"
+            echo "Downloading $shot"
+            curl --fail --location --retry 3 --retry-delay 2 "$url" --output "$tmp"
+
+            width="$(identify -format '%w' "$tmp" 2>/dev/null || echo 0)"
+            height="$(identify -format '%h' "$tmp" 2>/dev/null || echo 0)"
+            format="$(identify -format '%m' "$tmp" 2>/dev/null || true)"
+
+            if [ "$height" -lt 1920 ] || [ "$width" -lt 1060 ] || [ "$width" -gt 1080 ]; then
+              echo "$shot source too small or too wide: ${width}x${height} $format"
+              exit 1
+            fi
+
+            if ! python3 - "$width" "$height" <<'PY'
+          import sys
+          w,h=map(int,sys.argv[1:])
+          ratio=w/h if h else 0
+          target=9/16
+          raise SystemExit(0 if abs(ratio-target) <= 0.006 else 1)
+          PY
+            then
+              echo "$shot source ratio rejected: ${width}x${height}"
+              exit 1
+            fi
+
+            if [ "$width" -eq 1080 ] && [ "$height" -eq 1920 ]; then
+              convert "$tmp" -strip PNG32:"$DEST/$shot.png"
+              normalization='NONE'
+            else
+              # Preserve the original composition. Only center-pad missing side pixels.
+              convert "$tmp" -gravity center -background '#05080b' -extent 1080x1920 -strip PNG32:"$DEST/$shot.png"
+              normalization="CENTER_PAD_${width}x${height}_TO_1080x1920"
+            fi
+
+            test "$(identify -format '%w %h' "$DEST/$shot.png")" = '1080 1920'
+            rm -f "$tmp"
+
+            if [ "$first" -eq 0 ]; then printf ',\n' >> "$REGISTRY"; fi
+            first=0
+            printf '    {"shot":"%s","assetId":"%s","file":"candidates/%s.png","sourceDimensions":"%sx%s","normalization":"%s","sourceState":"CANDIDATE","approvalState":"PENDING"}' "$shot" "$asset_id" "$shot" "$width" "$height" "$normalization" >> "$REGISTRY"
+          done
+
+          printf '\n  ]\n}\n' >> "$REGISTRY"
+          mv "$REGISTRY" 'public/production-assets/v5/storyboards/EP001/candidate-sources.json'
+
+      - name: Validate imported candidate set
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          DEST='public/production-assets/v5/storyboards/EP001/candidates'
+          test "$(find "$DEST" -maxdepth 1 -name 'SH*.png' | wc -l)" -eq 16
+          for i in $(seq -w 1 16); do
+            f="$DEST/SH${i}.png"
+            test -s "$f"
+            test "$(identify -format '%m' "$f")" = 'PNG'
+            test "$(identify -format '%w %h' "$f")" = '1080 1920'
+            echo "SH${i}: normalized 1080x1920 PNG candidate OK"
+          done
+
+      - name: Commit candidates without approval
+        if: steps.gate.outputs.required == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm public/production-assets/v5/storyboards/EP001/.adobe-candidate-import.json
+          git add public/production-assets/v5/storyboards/EP001/candidates public/production-assets/v5/storyboards/EP001/candidate-sources.json
+          git commit -m 'feat(storyboard-v5): import Adobe EP001 candidates'
+          git pull --rebase origin agent/mvp-production-board
+          git push origin HEAD:agent/mvp-production-board

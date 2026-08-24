@@ -1,0 +1,13 @@
+{
+  "batch": "SH01-SH04",
+  "state": "PENDING",
+  "runtimePromoted": false,
+  "source": "Adobe Firefly/Photoshop API",
+  "target": {"width":1080,"height":1920,"ratio":"9:16"},
+  "shots": {
+    "SH01": {"sourceAsset":"urn:aaid:sc:AP:c18dc1d0-ff7d-40a4-8ab6-9d81d4e0b793","qc":"candidate-pass"},
+    "SH02": {"sourceAsset":"urn:aaid:sc:AP:9bbd9a34-772e-48c5-81e6-846142d2d941","qc":"candidate-pass"},
+    "SH03": {"sourceAsset":"urn:aaid:sc:AP:a84c35a5-e667-4bd3-8f75-cb74556a4896","edit":"incoming-call MAMA UI","qc":"candidate-pass"},
+    "SH04": {"sourceAsset":"urn:aaid:sc:AP:a796994f-42d8-4d04-a15b-c784ddba945c","qc":"candidate-pass"}
+  }
+}

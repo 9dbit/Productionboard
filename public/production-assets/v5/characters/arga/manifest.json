@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "characterId": "arga-pratama",
+  "characterName": "Arga Pratama",
+  "version": "v5",
+  "status": "LOCKED",
+  "format": "PNG",
+  "width": 1200,
+  "height": 1600,
+  "aspectRatio": "3:4",
+  "identityMaster": "front.png",
+  "angles": [
+    {"id":"front","file":"front.png"},
+    {"id":"three-quarter-right","file":"three-quarter-right.png"},
+    {"id":"right-profile","file":"right-profile.png"},
+    {"id":"back","file":"back.png"},
+    {"id":"three-quarter-left","file":"three-quarter-left.png"},
+    {"id":"left-profile","file":"left-profile.png"}
+  ]
+}

@@ -1,0 +1,95 @@
+name: Import Bowo V5 media
+
+on:
+  push:
+    branches:
+      - agent/mvp-production-board
+    paths:
+      - .github/workflows/import-bowo-v5.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-bowo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mvp-production-board
+
+      - name: Install image tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick
+
+      - name: Download Bowo V5 masters
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/bowo"
+          mkdir -p "$DEST"
+          curl --fail --location --retry 3 'https://at.adobe.com/iFGGQKuOciw96bJG' -o "$DEST/front.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/KVE3T5pIlUunbBPX' -o "$DEST/three-quarter-right.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/3NyM5wSfb7kTCnjz' -o "$DEST/right-profile.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/lPplo0PayFz3qCY2' -o "$DEST/back.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/VaeaE9vvZt2HwGmk' -o "$DEST/three-quarter-left.png"
+          curl --fail --location --retry 3 'https://at.adobe.com/jGCVuVjt2DxjOJBh' -o "$DEST/left-profile.png"
+
+      - name: Normalize to exact 3:4 portrait
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/bowo"
+          for f in "$DEST"/*.png; do
+            convert "$f" -auto-orient -gravity center -resize '1200x1600^' -extent 1200x1600 PNG24:"$f.tmp.png"
+            mv "$f.tmp.png" "$f"
+            test "$(identify -format '%wx%h' "$f")" = "1200x1600"
+          done
+
+      - name: Write locked manifest
+        run: |
+          cat > public/production-assets/v5/characters/bowo/manifest.json <<'JSON'
+          {
+            "schemaVersion": 1,
+            "characterId": "bowo",
+            "characterName": "Bowo",
+            "version": "v5",
+            "status": "LOCKED",
+            "format": "PNG",
+            "width": 1200,
+            "height": 1600,
+            "aspectRatio": "3:4",
+            "identityMaster": "front.png",
+            "angles": [
+              {"id":"front","file":"front.png"},
+              {"id":"three-quarter-right","file":"three-quarter-right.png"},
+              {"id":"right-profile","file":"right-profile.png"},
+              {"id":"back","file":"back.png"},
+              {"id":"three-quarter-left","file":"three-quarter-left.png"},
+              {"id":"left-profile","file":"left-profile.png"}
+            ]
+          }
+          JSON
+
+      - name: Validate Bowo package
+        run: |
+          set -euo pipefail
+          DEST="public/production-assets/v5/characters/bowo"
+          test "$(find "$DEST" -maxdepth 1 -name '*.png' | wc -l)" -eq 6
+          grep -q '"status": "LOCKED"' "$DEST/manifest.json"
+          for f in "$DEST"/*.png; do
+            test "$(identify -format '%wx%h' "$f")" = "1200x1600"
+          done
+          identify "$DEST"/*.png
+
+      - name: Commit Bowo package
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/production-assets/v5/characters/bowo
+          if git diff --cached --quiet; then
+            echo "No media changes to commit"
+            exit 0
+          fi
+          git commit -m "feat(media-v5): lock Bowo 6-angle 3x4 character package"
+          git push origin HEAD:agent/mvp-production-board
